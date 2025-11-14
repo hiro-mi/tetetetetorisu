@@ -23,6 +23,25 @@ const Mode = {
   KUSOGE: "kusoge",
 };
 
+const ControlMode = {
+  NONE: "none",
+  INVERTED: "inverted",
+  REROLL: "reroll",
+  DOUBLE: "double",
+};
+
+const controlModePool = [
+  ControlMode.INVERTED,
+  ControlMode.REROLL,
+  ControlMode.DOUBLE,
+];
+
+const controlModeMessages = {
+  [ControlMode.INVERTED]: "操作が逆さになる",
+  [ControlMode.REROLL]: "回転するたびに別ピースへ変化する",
+  [ControlMode.DOUBLE]: "ボタンを押すと2回分暴発する",
+};
+
 let currentMode = Mode.NORMAL;
 
 const KusogeEffects = {
@@ -131,6 +150,33 @@ function logEvent(message) {
   }
 }
 
+function rollControlMode(game, trigger = "抽選") {
+  if (!game) return;
+  const index = (Math.random() * controlModePool.length) | 0;
+  const nextMode = controlModePool[index];
+  applyControlMode(game, nextMode, trigger);
+}
+
+function applyControlMode(game, mode, trigger = "") {
+  if (!game) return;
+  const previous = game.controlMode || ControlMode.NONE;
+  game.controlMode = mode;
+  game.controlInverted = mode === ControlMode.INVERTED;
+  game.forceRerollOnRotate = mode === ControlMode.REROLL;
+  game.doubleAction = mode === ControlMode.DOUBLE;
+  if (mode === ControlMode.NONE) {
+    if (previous !== ControlMode.NONE) {
+      logEvent("理不尽操作モードがうやむやに終了した。");
+    }
+  } else {
+    const suffix =
+      trigger === "mode" ? "モード抽選" : trigger === "lock" ? "着地抽選" : trigger;
+    const description = controlModeMessages[mode] || "訳の分からない不具合";
+    logEvent(`理不尽操作モード: ${description}（${suffix}）`);
+  }
+  updateScoreboard(game);
+}
+
 class TeteGame {
   constructor() {
     this.board = createMatrix();
@@ -144,7 +190,9 @@ class TeteGame {
     this.lines = 0;
     this.level = 1;
     this.controlInverted = false;
-    this.invertTimer = null;
+    this.forceRerollOnRotate = false;
+    this.doubleAction = false;
+    this.controlMode = ControlMode.NONE;
     this.animationId = null;
     this.bindInputs();
   }
@@ -155,24 +203,34 @@ class TeteGame {
       const key = this.controlInverted ? this.invertKey(event.code) : event.code;
       switch (key) {
         case "ArrowLeft":
-          this.move(-1);
+          this.applyAction(() => this.move(-1));
           break;
         case "ArrowRight":
-          this.move(1);
+          this.applyAction(() => this.move(1));
           break;
         case "ArrowDown":
-          this.softDrop();
+          this.applyAction(() => this.softDrop());
           break;
         case "ArrowUp":
-          this.rotatePiece();
+          this.applyAction(() => this.rotatePiece());
           break;
         case "Space":
-          this.hardDrop();
+          this.applyAction(() => this.hardDrop());
           break;
         default:
           break;
       }
     });
+  }
+
+  applyAction(action) {
+    if (typeof action !== "function") {
+      return;
+    }
+    action();
+    if (this.doubleAction && currentMode === Mode.KUSOGE) {
+      action();
+    }
   }
 
   invertKey(code) {
@@ -222,7 +280,9 @@ class TeteGame {
     this.level = 1;
     this.dropInterval = 800;
     this.controlInverted = false;
-    clearTimeout(this.invertTimer);
+    this.forceRerollOnRotate = false;
+    this.doubleAction = false;
+    this.controlMode = ControlMode.NONE;
     updateScoreboard(this);
     clearBoardBackground();
     logEvent("ボード初期化。");
@@ -272,7 +332,7 @@ class TeteGame {
   }
 
   rotatePiece() {
-    if (!isNormalMode()) {
+    if (this.forceRerollOnRotate && currentMode === Mode.KUSOGE) {
       const originalPiece = cloneShape(this.piece);
       const originalPos = { x: this.pos.x, y: this.pos.y };
       const currentId = getPieceId(this.piece);
@@ -286,7 +346,6 @@ class TeteGame {
         for (const shift of offsets) {
           this.pos.x += shift;
           if (!this.collide()) {
-            logEvent("回転ボタンでブロック種類が変わった。混乱必至。");
             return;
           }
           this.pos.x -= shift;
@@ -294,8 +353,6 @@ class TeteGame {
         this.piece = originalPiece;
         this.pos.x = originalPos.x;
         this.pos.y = originalPos.y;
-      } else {
-        logEvent("回転ボタンでブロック種類が変わった。混乱必至。");
       }
       return;
     }
@@ -319,8 +376,11 @@ class TeteGame {
       this.merge();
       this.clearLines();
       this.spawnPiece();
-      this.rollInvertEvent();
-      updateScoreboard(this);
+      if (isNormalMode()) {
+        updateScoreboard(this);
+      } else {
+        rollControlMode(this, "lock");
+      }
     }
     this.dropCounter = 0;
   }
@@ -353,9 +413,12 @@ class TeteGame {
     }
     this.clearLines();
     this.spawnPiece();
-    this.rollInvertEvent();
+    if (isNormalMode()) {
+      updateScoreboard(this);
+    } else {
+      rollControlMode(this, "lock");
+    }
     this.dropCounter = 0;
-    updateScoreboard(this);
   }
 
   collide() {
@@ -435,18 +498,6 @@ class TeteGame {
     }
   }
 
-  rollInvertEvent() {
-    const chance = isNormalMode() ? 0 : 0.25;
-    if (Math.random() < chance) {
-      // 操作逆転イベントは5秒継続
-      this.controlInverted = true;
-      clearTimeout(this.invertTimer);
-      this.invertTimer = setTimeout(() => {
-        this.controlInverted = false;
-      }, 5000);
-      logEvent("操作が逆になった。心の準備はしていない。");
-    }
-  }
 }
 
 function drawMatrix(matrix, offset) {
@@ -716,11 +767,10 @@ function applyMode(game, mode) {
   }
   if (game) {
     if (mode === Mode.NORMAL) {
-      game.controlInverted = false;
-      clearTimeout(game.invertTimer);
-      game.invertTimer = null;
+      applyControlMode(game, ControlMode.NONE);
+    } else {
+      rollControlMode(game, "mode");
     }
-    updateScoreboard(game);
   }
   if (previous !== mode && logEl) {
     if (mode === Mode.NORMAL) {
@@ -821,11 +871,11 @@ function setupTouchControls(game) {
   }
 
   const actionMap = {
-    left: () => game.move(-1),
-    right: () => game.move(1),
-    down: () => game.softDrop(),
-    rotate: () => game.rotatePiece(),
-    drop: () => game.hardDrop(),
+    left: () => game.applyAction(() => game.move(-1)),
+    right: () => game.applyAction(() => game.move(1)),
+    down: () => game.applyAction(() => game.softDrop()),
+    rotate: () => game.applyAction(() => game.rotatePiece()),
+    drop: () => game.applyAction(() => game.hardDrop()),
   };
 
   const invoke = (event, control) => {
