@@ -24,10 +24,12 @@ body.mobile-layout .wrapper {
 body.mobile-layout .screen-grid {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.78fr);
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto auto;
   grid-template-areas:
-    "info game status"
-    "info game status";
+    "info play status"
+    "info play status"
+    "controls controls controls"
+    "log log log";
   align-items: stretch;
   row-gap: 12px;
   column-gap: 12px;
@@ -71,26 +73,25 @@ body.mobile-layout .side-info__title {
 }
 
 body.mobile-layout .side-info__tagline {
-  max-width: 132px;
-  writing-mode: horizontal-tb;
-  font-size: 0.92rem;
-  line-height: 1.35;
+  max-width: none;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 0.9rem;
+  line-height: 1.15;
   color: inherit;
-  text-align: left;
-  flex: 1 1 120px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
 }
 
 body.mobile-layout .game-stack {
-  grid-area: game;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
-  min-height: 0;
-  width: 100%;
+  display: contents;
 }
 
 body.mobile-layout .play-area {
+  grid-area: play;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -142,6 +143,7 @@ body.mobile-layout .status-panel .stat.tips p {
 }
 
 body.mobile-layout .log-panel {
+  grid-area: log;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -170,9 +172,9 @@ body.mobile-layout .log-panel ul {
 }
 
 body.mobile-layout .touch-controls {
+  grid-area: controls;
   width: 100%;
 }
-
 
 .touch-controls {
   display: grid;

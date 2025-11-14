@@ -3,6 +3,7 @@
   background: #000;
   color: #f0f0f0;
   --flash-overlay: transparent;
+  --playfield-height: 480px;
 }
 
 html {
@@ -474,6 +475,7 @@ main {
   background: #111;
   border: 4px solid #333;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  height: var(--playfield-height);
 }
 
 .status-panel {
@@ -484,6 +486,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: var(--playfield-height);
 }
 
 .stat {
