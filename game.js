@@ -67,6 +67,28 @@ const colors = {
 const moods = ["😑", "😠", "🤢", "😵", "🤯"];
 const normalMoods = ["🙂", "😌", "😎", "😄", "🤩"];
 
+function cloneShape(shape) {
+  return shape.map((row) => [...row]);
+}
+
+function getPieceId(piece) {
+  for (const row of piece) {
+    for (const value of row) {
+      if (value !== 0) {
+        return value;
+      }
+    }
+  }
+  return 0;
+}
+
+function getRandomShape(excludeId) {
+  const pool = shapes.filter((shape) => getPieceId(shape) !== excludeId);
+  const candidates = pool.length > 0 ? pool : shapes;
+  const index = (Math.random() * candidates.length) | 0;
+  return candidates[index];
+}
+
 function isNormalMode() {
   return currentMode === Mode.NORMAL;
 }
@@ -193,7 +215,7 @@ class TeteGame {
 
   spawnPiece() {
     const index = (Math.random() * shapes.length) | 0;
-    this.piece = shapes[index].map((row) => [...row]);
+    this.piece = cloneShape(shapes[index]);
     this.pos.y = 0;
     this.pos.x = ((cols / 2) | 0) - ((this.piece[0].length / 2) | 0);
     if (this.collide()) {
@@ -234,6 +256,33 @@ class TeteGame {
   }
 
   rotatePiece() {
+    if (!isNormalMode()) {
+      const originalPiece = cloneShape(this.piece);
+      const originalPos = { x: this.pos.x, y: this.pos.y };
+      const currentId = getPieceId(this.piece);
+      const newShape = cloneShape(getRandomShape(currentId));
+      this.piece = newShape;
+      const centerX = originalPos.x + Math.floor(originalPiece[0].length / 2);
+      this.pos.x = centerX - Math.floor(this.piece[0].length / 2);
+      this.pos.x = Math.max(0, Math.min(cols - this.piece[0].length, this.pos.x));
+      if (this.collide()) {
+        const offsets = [0, -1, 1, -2, 2];
+        for (const shift of offsets) {
+          this.pos.x += shift;
+          if (!this.collide()) {
+            logEvent("回転ボタンでブロック種類が変わった。混乱必至。");
+            return;
+          }
+          this.pos.x -= shift;
+        }
+        this.piece = originalPiece;
+        this.pos.x = originalPos.x;
+        this.pos.y = originalPos.y;
+      } else {
+        logEvent("回転ボタンでブロック種類が変わった。混乱必至。");
+      }
+      return;
+    }
     const original = this.piece.map((row) => [...row]);
     this.piece = rotate(this.piece, 1);
     const offset = [0, -1, 1];
