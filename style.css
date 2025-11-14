@@ -42,7 +42,7 @@ body::after {
   background: var(--flash-overlay);
   transition: background 0.25s ease;
   mix-blend-mode: screen;
-  z-index: 1;
+  z-index: 3;
   opacity: 1;
 }
 
@@ -101,6 +101,162 @@ body.mode-kusoge::before {
   z-index: 0;
 }
 
+#kusoge-background {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  z-index: 1;
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+#kusoge-background.is-active {
+  opacity: 1;
+}
+
+#kusoge-background .tetromino-swarm,
+#kusoge-background .danmaku-field,
+#kusoge-background .fractal-flow {
+  position: absolute;
+  inset: 0;
+}
+
+#kusoge-background .tetromino,
+#kusoge-background .bullet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: center;
+  opacity: 0;
+}
+
+#kusoge-background .tetromino {
+  width: 18px;
+  height: 18px;
+  color: var(--tet-color, #ff66d2);
+  filter: drop-shadow(0 0 10px currentColor);
+  animation: tetFloat 12s linear infinite;
+  animation-play-state: paused;
+  mix-blend-mode: screen;
+  overflow: visible;
+}
+
+#kusoge-background .tetromino::before {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  border-radius: 3px;
+  box-shadow: 0 0 0 currentColor;
+}
+
+#kusoge-background .tetromino.piece-i::before {
+  box-shadow:
+    20px 0 0 currentColor,
+    40px 0 0 currentColor,
+    60px 0 0 currentColor;
+}
+
+#kusoge-background .tetromino.piece-t::before {
+  box-shadow:
+    20px 0 0 currentColor,
+    40px 0 0 currentColor,
+    20px 20px 0 currentColor;
+}
+
+#kusoge-background .tetromino.piece-l::before {
+  box-shadow:
+    0 20px 0 currentColor,
+    0 40px 0 currentColor,
+    20px 40px 0 currentColor;
+}
+
+#kusoge-background .tetromino.piece-j::before {
+  box-shadow:
+    0 20px 0 currentColor,
+    0 40px 0 currentColor,
+    -20px 40px 0 currentColor;
+}
+
+#kusoge-background .tetromino.piece-o::before {
+  box-shadow:
+    20px 0 0 currentColor,
+    0 20px 0 currentColor,
+    20px 20px 0 currentColor;
+}
+
+#kusoge-background .tetromino.piece-s::before {
+  box-shadow:
+    20px 0 0 currentColor,
+    20px -20px 0 currentColor,
+    40px -20px 0 currentColor;
+}
+
+#kusoge-background .tetromino.piece-z::before {
+  box-shadow:
+    20px 0 0 currentColor,
+    20px 20px 0 currentColor,
+    40px 20px 0 currentColor;
+}
+
+#kusoge-background .bullet {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.6) 35%,
+    rgba(var(--bullet-rgb, 255, 0, 200), 0.75) 70%,
+    rgba(var(--bullet-rgb, 255, 0, 200), 0) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 18px rgba(var(--bullet-rgb, 255, 0, 200), 0.75);
+  animation: bulletSpray 5s linear infinite;
+  animation-play-state: paused;
+  mix-blend-mode: screen;
+}
+
+#kusoge-background .fractal-flow {
+  position: absolute;
+  inset: -20%;
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 70, 200, 0.25) 0deg 6deg,
+      transparent 6deg 12deg
+    ),
+    repeating-conic-gradient(
+      from 90deg,
+      rgba(70, 220, 255, 0.2) 0deg 8deg,
+      transparent 8deg 16deg
+    ),
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.12), transparent 65%);
+  background-size: 180% 180%, 150% 150%, 100% 100%;
+  background-blend-mode: screen;
+  mix-blend-mode: color-dodge;
+  filter: blur(0.4px) contrast(1.15);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  animation: fractalDrift 26s linear infinite;
+  animation-play-state: paused;
+  will-change: transform, filter;
+}
+
+#kusoge-background.is-active .tetromino,
+#kusoge-background.is-active .bullet,
+#kusoge-background.is-active .fractal-flow {
+  animation-play-state: running;
+}
+
+#kusoge-background.is-active .fractal-flow {
+  opacity: 0.22;
+}
+
 @keyframes matrixRain {
   0% {
     background-position: 0 0, 0 0;
@@ -116,6 +272,59 @@ body.mode-kusoge::before {
   }
   100% {
     background-position: 140px 0, -160px 0, 52% 48%;
+  }
+}
+
+@keyframes tetFloat {
+  0% {
+    transform: translate(var(--start-x, 0vw), var(--start-y, -40vh)) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--end-x, 0vw), var(--end-y, 140vh)) rotate(var(--spin, 540deg)) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes bulletSpray {
+  0% {
+    transform: translate(var(--start-x, -10vw), var(--start-y, 120vh)) scale(0.3) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(var(--mid-x, 50vw), var(--mid-y, 50vh)) scale(1.2) rotate(var(--half-twist, 180deg));
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--end-x, 110vw), var(--end-y, -20vh)) scale(0.6) rotate(var(--twist, 360deg));
+    opacity: 0;
+  }
+}
+
+@keyframes fractalDrift {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg) saturate(1.1);
+    background-position: 0% 0%, 50% 50%, 50% 50%;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.08);
+    filter: hue-rotate(180deg) saturate(1.4);
+    background-position: 60% 40%, 20% 80%, 60% 40%;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    filter: hue-rotate(360deg) saturate(1.1);
+    background-position: 0% 0%, 50% 50%, 50% 50%;
   }
 }
 
