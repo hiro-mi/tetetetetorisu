@@ -9,11 +9,20 @@ let scoreEl;
 let linesEl;
 let levelEl;
 let moodEl;
+let modeEl;
 let logEl;
 let startBtn;
 let pauseBtn;
 let body;
 let flashTimer = null;
+let modeTimer = null;
+
+const Mode = {
+  NORMAL: "normal",
+  KUSOGE: "kusoge",
+};
+
+let currentMode = Mode.NORMAL;
 
 const shapes = [
   [[1, 1, 1, 1]],
@@ -55,6 +64,11 @@ const colors = {
 };
 
 const moods = ["😑", "😠", "🤢", "😵", "🤯"];
+const normalMoods = ["🙂", "😌", "😎", "😄", "🤩"];
+
+function isNormalMode() {
+  return currentMode === Mode.NORMAL;
+}
 
 function createMatrix() {
   return Array.from({ length: rows }, () => Array(cols).fill(0));
@@ -263,8 +277,14 @@ class TeteGame {
       distance++;
     }
     this.merge();
-    this.score -= distance * 2;
-    logEvent(`勢い余って減点 ${distance * 2} 点。`);
+    if (isNormalMode()) {
+      this.score += distance * 2;
+    } else {
+      this.score -= distance * 2;
+      if (distance > 0) {
+        logEvent(`勢い余って減点 ${distance * 2} 点。`);
+      }
+    }
     this.clearLines();
     this.spawnPiece();
     this.rollInvertEvent();
@@ -326,11 +346,17 @@ class TeteGame {
   }
 
   applyWeirdScoring(linesCleared) {
-    // 連続消しすると逆に損する理不尽スコア
-    const base = 60;
-    const penalty = (linesCleared - 1) * 80;
-    const gain = Math.max(5, base - penalty);
-    this.score += gain;
+    if (isNormalMode()) {
+      const standard = [0, 100, 300, 500, 800];
+      const gain = standard[linesCleared] || linesCleared * 200;
+      this.score += gain;
+    } else {
+      // 連続消しすると逆に損する理不尽スコア
+      const base = 60;
+      const penalty = (linesCleared - 1) * 80;
+      const gain = Math.max(5, base - penalty);
+      this.score += gain;
+    }
   }
 
   bumpLevel() {
@@ -344,7 +370,8 @@ class TeteGame {
   }
 
   rollInvertEvent() {
-    if (Math.random() < 0.25) {
+    const chance = isNormalMode() ? 0 : 0.25;
+    if (Math.random() < chance) {
       // 操作逆転イベントは5秒継続
       this.controlInverted = true;
       clearTimeout(this.invertTimer);
@@ -376,15 +403,18 @@ function drawMatrix(matrix, offset) {
 
 function triggerFlash() {
   if (!body) return;
-  const color = `rgba(${rand255()}, ${rand255()}, ${rand255()}, 0.2)`;
-  body.style.background = `radial-gradient(circle, ${color}, #0d0d0d 70%)`;
+  const color = `rgba(${rand255()}, ${rand255()}, ${rand255()}, 0.3)`;
+  const positionX = (Math.random() * 100).toFixed(1);
+  const positionY = (Math.random() * 100).toFixed(1);
+  const overlay = `radial-gradient(circle at ${positionX}% ${positionY}%, ${color} 0%, transparent 70%)`;
+  body.style.setProperty("--flash-overlay", overlay);
   clearTimeout(flashTimer);
   flashTimer = setTimeout(clearBoardBackground, 250);
 }
 
 function clearBoardBackground() {
   if (!body) return;
-  body.style.background = "#1a1a1a";
+  body.style.setProperty("--flash-overlay", "transparent");
 }
 
 function rand255() {
@@ -395,12 +425,56 @@ function updateScoreboard(game) {
   scoreEl.textContent = game.score;
   linesEl.textContent = game.lines;
   levelEl.textContent = game.level;
+  if (modeEl) {
+    modeEl.textContent = isNormalMode() ? "NORMAL" : "クソゲー";
+  }
   // だいたい悪くなる顔文字を回す
   if (!game.controlInverted) {
-    moodEl.textContent = moods[(game.level + game.lines) % moods.length];
+    if (isNormalMode()) {
+      moodEl.textContent = normalMoods[game.level % normalMoods.length];
+    } else {
+      moodEl.textContent = moods[(game.level + game.lines) % moods.length];
+    }
   } else {
     moodEl.textContent = "🙃";
   }
+}
+
+function applyMode(game, mode) {
+  if (!body) return;
+  const previous = currentMode;
+  currentMode = mode;
+  body.classList.remove("mode-normal", "mode-kusoge");
+  body.classList.add(mode === Mode.NORMAL ? "mode-normal" : "mode-kusoge");
+  if (modeEl) {
+    modeEl.textContent = mode === Mode.NORMAL ? "NORMAL" : "クソゲー";
+  }
+  if (game) {
+    if (mode === Mode.NORMAL) {
+      game.controlInverted = false;
+      clearTimeout(game.invertTimer);
+      game.invertTimer = null;
+    }
+    updateScoreboard(game);
+  }
+  if (previous !== mode && logEl) {
+    if (mode === Mode.NORMAL) {
+      logEvent("突然まともな雰囲気になった。今のうちに稼げ。");
+    } else {
+      logEvent("クソゲーモード突入。目が痛い。");
+    }
+  }
+}
+
+function startModeCycle(game) {
+  if (modeTimer) {
+    clearInterval(modeTimer);
+  }
+  applyMode(game, currentMode);
+  modeTimer = setInterval(() => {
+    const next = currentMode === Mode.NORMAL ? Mode.KUSOGE : Mode.NORMAL;
+    applyMode(game, next);
+  }, 5000);
 }
 
 function initGame() {
@@ -410,6 +484,7 @@ function initGame() {
   linesEl = document.getElementById("lines");
   levelEl = document.getElementById("level");
   moodEl = document.getElementById("mood");
+  modeEl = document.getElementById("mode");
   logEl = document.getElementById("event-log");
   startBtn = document.getElementById("start-btn");
   pauseBtn = document.getElementById("pause-btn");
@@ -442,6 +517,8 @@ function initGame() {
       pauseBtn.textContent = "ポーズ";
     }
   });
+
+  startModeCycle(game);
 }
 
 if (document.readyState === "loading") {
