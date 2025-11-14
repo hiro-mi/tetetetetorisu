@@ -413,6 +413,27 @@ header h1 {
   color: #f54582;
 }
 
+.version-switch {
+  margin-top: 12px;
+  display: inline-flex;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.version-switch a {
+  color: #9de8ff;
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid rgba(157, 232, 255, 0.4);
+  border-radius: 999px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.version-switch a:hover {
+  background-color: rgba(157, 232, 255, 0.2);
+  color: #ffffff;
+}
+
 main {
   display: flex;
   gap: 24px;
