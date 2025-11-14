@@ -79,6 +79,13 @@ body.mode-kusoge {
 }
 
 body.mode-kusoge::before {
+  opacity: 0;
+  background: none;
+  animation: none;
+  z-index: 0;
+}
+
+body.mode-kusoge.has-laser::before {
   opacity: 1;
   background-image:
     repeating-linear-gradient(
@@ -119,18 +126,37 @@ body.mode-kusoge::before {
 
 #kusoge-background .tetromino-swarm,
 #kusoge-background .danmaku-field,
+#kusoge-background .emoji-stream,
 #kusoge-background .fractal-flow {
   position: absolute;
   inset: 0;
 }
 
+#kusoge-background .tetromino-swarm {
+  z-index: 2;
+}
+
+#kusoge-background .danmaku-field {
+  z-index: 3;
+}
+
+#kusoge-background .emoji-stream {
+  z-index: 4;
+}
+
+#kusoge-background .fractal-flow {
+  z-index: 1;
+}
+
 #kusoge-background .tetromino,
-#kusoge-background .bullet {
+#kusoge-background .bullet,
+#kusoge-background .emoji {
   position: absolute;
   top: 0;
   left: 0;
   transform-origin: center;
   opacity: 0;
+  transition: opacity 0.6s ease;
 }
 
 #kusoge-background .tetromino {
@@ -221,6 +247,15 @@ body.mode-kusoge::before {
   mix-blend-mode: screen;
 }
 
+#kusoge-background .emoji {
+  font-size: calc(28px * var(--emoji-scale, 1));
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.45));
+  animation: emojiGlide 12s linear infinite;
+  animation-play-state: paused;
+  mix-blend-mode: screen;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
 #kusoge-background .fractal-flow {
   position: absolute;
   inset: -20%;
@@ -239,7 +274,7 @@ body.mode-kusoge::before {
   background-size: 180% 180%, 150% 150%, 100% 100%;
   background-blend-mode: screen;
   mix-blend-mode: color-dodge;
-  filter: blur(0.4px) contrast(1.15);
+  filter: saturate(1.45) contrast(1.2);
   opacity: 0;
   transition: opacity 1.2s ease;
   animation: fractalDrift 26s linear infinite;
@@ -247,14 +282,24 @@ body.mode-kusoge::before {
   will-change: transform, filter;
 }
 
-#kusoge-background.is-active .tetromino,
-#kusoge-background.is-active .bullet,
-#kusoge-background.is-active .fractal-flow {
+#kusoge-background.with-tetromino .tetromino {
   animation-play-state: running;
+  opacity: 0.95;
 }
 
-#kusoge-background.is-active .fractal-flow {
-  opacity: 0.22;
+#kusoge-background.with-danmaku .bullet {
+  animation-play-state: running;
+  opacity: 1;
+}
+
+#kusoge-background.with-emoji .emoji {
+  animation-play-state: running;
+  opacity: 1;
+}
+
+#kusoge-background.with-fractal .fractal-flow {
+  animation-play-state: running;
+  opacity: 0.55;
 }
 
 @keyframes matrixRain {
@@ -306,6 +351,23 @@ body.mode-kusoge::before {
   }
   100% {
     transform: translate(var(--end-x, 110vw), var(--end-y, -20vh)) scale(0.6) rotate(var(--twist, 360deg));
+    opacity: 0;
+  }
+}
+
+@keyframes emojiGlide {
+  0% {
+    transform: translate(-25vw, var(--start-y, 0vh)) scale(var(--emoji-scale, 1)) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(125vw, var(--end-y, 0vh)) scale(var(--emoji-scale, 1)) rotate(var(--emoji-spin, 0deg));
     opacity: 0;
   }
 }

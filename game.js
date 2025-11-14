@@ -25,6 +25,18 @@ const Mode = {
 
 let currentMode = Mode.NORMAL;
 
+const KusogeEffects = {
+  LASER: "laser",
+  DANMAKU: "danmaku",
+  TETROMINO: "tetromino",
+  FRACTAL: "fractal",
+  EMOJI: "emoji",
+};
+
+const kusogeEffectPool = Object.values(KusogeEffects);
+
+let currentKusogeEffects = [];
+
 const shapes = [
   [[1, 1, 1, 1]],
   [
@@ -521,6 +533,35 @@ function createBulletPath() {
   };
 }
 
+function pickKusogeEffects() {
+  const selection = kusogeEffectPool.filter(() => Math.random() < 0.6);
+  if (selection.length === 0) {
+    const fallback = kusogeEffectPool[(Math.random() * kusogeEffectPool.length) | 0];
+    return [fallback];
+  }
+  return selection;
+}
+
+function applyKusogeEffects(effects, active) {
+  const effectSet = new Set(active ? effects : []);
+  currentKusogeEffects = active ? [...effectSet] : [];
+  if (body) {
+    body.classList.toggle("has-laser", effectSet.has(KusogeEffects.LASER));
+  }
+  if (!kusogeLayer) {
+    return;
+  }
+  const classMap = [
+    ["with-tetromino", KusogeEffects.TETROMINO],
+    ["with-danmaku", KusogeEffects.DANMAKU],
+    ["with-emoji", KusogeEffects.EMOJI],
+    ["with-fractal", KusogeEffects.FRACTAL],
+  ];
+  classMap.forEach(([className, effect]) => {
+    kusogeLayer.classList.toggle(className, effectSet.has(effect));
+  });
+}
+
 function setupKusogeBackground() {
   kusogeLayer = document.getElementById("kusoge-background");
   if (!kusogeLayer) {
@@ -529,7 +570,8 @@ function setupKusogeBackground() {
   kusogeLayer.setAttribute("aria-hidden", "true");
   const tetLayer = kusogeLayer.querySelector(".tetromino-swarm");
   const bulletLayer = kusogeLayer.querySelector(".danmaku-field");
-  if (!tetLayer || !bulletLayer) {
+  const emojiLayer = kusogeLayer.querySelector(".emoji-stream");
+  if (!tetLayer || !bulletLayer || !emojiLayer) {
     return;
   }
 
@@ -544,20 +586,20 @@ function setupKusogeBackground() {
       "piece-z",
     ];
     const tetColors = Object.values(colors).filter((value) => value !== colors[0]);
-    const tetrominoCount = 14;
+    const tetrominoCount = 22;
     for (let i = 0; i < tetrominoCount; i += 1) {
       const element = document.createElement("span");
       const pieceClass = tetrominoClasses[(Math.random() * tetrominoClasses.length) | 0];
       const color = tetColors[(Math.random() * tetColors.length) | 0];
       element.className = `tetromino ${pieceClass}`;
       element.style.setProperty("--tet-color", color);
-      element.style.setProperty("--start-x", `${randRange(-12, 112).toFixed(1)}vw`);
-      element.style.setProperty("--end-x", `${randRange(-12, 112).toFixed(1)}vw`);
-      element.style.setProperty("--start-y", `${randRange(-45, -12).toFixed(1)}vh`);
-      element.style.setProperty("--end-y", `${randRange(110, 160).toFixed(1)}vh`);
-      element.style.setProperty("--spin", `${Math.round(randRange(3, 6)) * 180}deg`);
-      element.style.animationDuration = `${randRange(9, 18).toFixed(1)}s`;
-      element.style.animationDelay = `${randRange(-18, 0).toFixed(1)}s`;
+      element.style.setProperty("--start-x", `${randRange(-25, 125).toFixed(1)}vw`);
+      element.style.setProperty("--end-x", `${randRange(-25, 125).toFixed(1)}vw`);
+      element.style.setProperty("--start-y", `${randRange(-20, 120).toFixed(1)}vh`);
+      element.style.setProperty("--end-y", `${randRange(-20, 140).toFixed(1)}vh`);
+      element.style.setProperty("--spin", `${Math.round(randRange(2, 5)) * 180}deg`);
+      element.style.animationDuration = `${randRange(10, 20).toFixed(1)}s`;
+      element.style.animationDelay = `${randRange(-20, 0).toFixed(1)}s`;
       tetLayer.appendChild(element);
     }
   }
@@ -569,7 +611,7 @@ function setupKusogeBackground() {
       "255, 200, 40",
       "200, 120, 255",
     ];
-    const bulletCount = 26;
+    const bulletCount = 38;
     for (let i = 0; i < bulletCount; i += 1) {
       const element = document.createElement("span");
       element.className = "bullet";
@@ -586,9 +628,49 @@ function setupKusogeBackground() {
       element.style.setProperty("--end-y", `${path.endY.toFixed(1)}vh`);
       element.style.setProperty("--half-twist", `${path.halfTwist.toFixed(0)}deg`);
       element.style.setProperty("--twist", `${path.twist.toFixed(0)}deg`);
-      element.style.animationDuration = `${randRange(3.5, 7.5).toFixed(1)}s`;
-      element.style.animationDelay = `${randRange(-7.5, 0).toFixed(1)}s`;
+      element.style.animationDuration = `${randRange(2.8, 6.2).toFixed(1)}s`;
+      element.style.animationDelay = `${randRange(-6.2, 0).toFixed(1)}s`;
       bulletLayer.appendChild(element);
+    }
+  }
+
+  if (emojiLayer.childElementCount === 0) {
+    const emojiChoices = [
+      "💥",
+      "🔥",
+      "💣",
+      "👾",
+      "🤡",
+      "🧠",
+      "🚨",
+      "🥴",
+      "😵‍💫",
+      "🍅",
+      "🐙",
+      "🧨",
+      "☢️",
+      "🌀",
+      "⚡",
+      "🎲",
+    ];
+    const emojiCount = 24;
+    for (let i = 0; i < emojiCount; i += 1) {
+      const element = document.createElement("span");
+      const glyph = emojiChoices[(Math.random() * emojiChoices.length) | 0];
+      const startY = randRange(-10, 110);
+      const endY = startY + randRange(-15, 15);
+      element.className = "emoji";
+      element.textContent = glyph;
+      element.style.setProperty("--start-y", `${startY.toFixed(1)}vh`);
+      element.style.setProperty("--end-y", `${Math.max(-15, Math.min(115, endY)).toFixed(1)}vh`);
+      element.style.setProperty("--emoji-scale", randRange(0.65, 1.8).toFixed(2));
+      element.style.setProperty(
+        "--emoji-spin",
+        `${(Math.random() < 0.5 ? -1 : 1) * Math.round(randRange(90, 540))}deg`
+      );
+      element.style.animationDuration = `${randRange(8, 16).toFixed(1)}s`;
+      element.style.animationDelay = `${randRange(-16, 0).toFixed(1)}s`;
+      emojiLayer.appendChild(element);
     }
   }
 }
@@ -597,6 +679,8 @@ function toggleKusogeBackground(active) {
   if (!kusogeLayer) {
     return;
   }
+  const effects = active ? pickKusogeEffects() : [];
+  applyKusogeEffects(effects, active);
   kusogeLayer.classList.toggle("is-active", active);
   kusogeLayer.setAttribute("aria-hidden", active ? "false" : "true");
 }
