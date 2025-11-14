@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>tetetetetorisu</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>テテテテトリス</h1>
+        <p>雑に遊べるテトリス風クソゲー。挙動に難癖あり。</p>
+      </header>
+      <main>
+        <section class="play-area">
+          <canvas id="board" width="240" height="480" aria-label="プレイフィールド"></canvas>
+          <div class="status-panel">
+            <div class="stat">
+              <span class="label">SCORE</span>
+              <span id="score">0</span>
+            </div>
+            <div class="stat">
+              <span class="label">LINES</span>
+              <span id="lines">0</span>
+            </div>
+            <div class="stat">
+              <span class="label">LEVEL</span>
+              <span id="level">1</span>
+            </div>
+            <div class="stat">
+              <span class="label">MOOD</span>
+              <span id="mood">😑</span>
+            </div>
+            <div class="stat tips">
+              <p>矢印キー：移動 / ↑：回転 / Space：強制落下</p>
+              <p>たまに操作が逆転します。仕様です。</p>
+            </div>
+            <div class="controls">
+              <button id="start-btn" type="button">スタート / リセット</button>
+              <button id="pause-btn" type="button">ポーズ</button>
+            </div>
+          </div>
+        </section>
+        <section class="log-panel">
+          <h2>不安定ログ</h2>
+          <ul id="event-log"></ul>
+        </section>
+      </main>
+    </div>
+    <script src="game.js" type="module"></script>
+  </body>
+</html>
