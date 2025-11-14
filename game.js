@@ -801,6 +801,7 @@ function initGame() {
     defocusActiveButton(pauseBtn);
   });
 
+  setupTouchControls(game);
   startModeCycle(game);
 }
 
@@ -811,6 +812,48 @@ function defocusActiveButton(button) {
   if (document.activeElement === button) {
     button.blur();
   }
+}
+
+function setupTouchControls(game) {
+  const buttons = document.querySelectorAll("[data-control]");
+  if (!buttons.length) {
+    return;
+  }
+
+  const actionMap = {
+    left: () => game.move(-1),
+    right: () => game.move(1),
+    down: () => game.softDrop(),
+    rotate: () => game.rotatePiece(),
+    drop: () => game.hardDrop(),
+  };
+
+  const invoke = (event, control) => {
+    if (event) {
+      event.preventDefault();
+    }
+    if (!game.running) {
+      return;
+    }
+    const action = actionMap[control];
+    if (action) {
+      action();
+    }
+  };
+
+  buttons.forEach((button) => {
+    const control = button.dataset.control;
+    if (!actionMap[control]) {
+      return;
+    }
+
+    button.addEventListener("click", (event) => invoke(event, control));
+    button.addEventListener(
+      "touchstart",
+      (event) => invoke(event, control),
+      { passive: false }
+    );
+  });
 }
 
 if (document.readyState === "loading") {

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tetetetetorisu mobile</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mobile.css" />
+  </head>
+  <body class="mobile-layout">
+    <div id="kusoge-background" aria-hidden="true">
+      <div class="tetromino-swarm"></div>
+      <div class="danmaku-field"></div>
+      <div class="emoji-stream"></div>
+      <div class="fractal-flow"></div>
+    </div>
+    <div class="wrapper">
+      <header>
+        <h1>テテテテトリス（タッチ仕様）</h1>
+        <p>スマホで雑に遊べるようにしたテトリス風クソゲー。</p>
+      </header>
+      <main>
+        <section class="play-area">
+          <canvas id="board" width="240" height="480" aria-label="プレイフィールド"></canvas>
+          <div class="status-panel">
+            <div class="stat">
+              <span class="label">SCORE</span>
+              <span id="score">0</span>
+            </div>
+            <div class="stat">
+              <span class="label">LINES</span>
+              <span id="lines">0</span>
+            </div>
+            <div class="stat">
+              <span class="label">LEVEL</span>
+              <span id="level">1</span>
+            </div>
+            <div class="stat">
+              <span class="label">MODE</span>
+              <span id="mode">NORMAL</span>
+            </div>
+            <div class="stat">
+              <span class="label">MOOD</span>
+              <span id="mood">😑</span>
+            </div>
+            <div class="stat tips">
+              <p>画面下のボタンで操作。たまに逆転します（仕様）。</p>
+              <p>キーボードがあれば従来の矢印キーでも動きます。</p>
+            </div>
+            <div class="controls">
+              <button id="start-btn" type="button">スタート / リセット</button>
+              <button id="pause-btn" type="button">ポーズ</button>
+            </div>
+          </div>
+        </section>
+        <section class="touch-controls" aria-label="タッチ操作ボタン">
+          <div class="touch-row touch-row--narrow">
+            <button class="touch-btn" type="button" data-control="rotate">回転</button>
+            <button class="touch-btn" type="button" data-control="drop">強制落下</button>
+          </div>
+          <div class="touch-row touch-row--wide">
+            <button class="touch-btn" type="button" data-control="left">◀ 左</button>
+            <button class="touch-btn" type="button" data-control="down">▼ 落下</button>
+            <button class="touch-btn" type="button" data-control="right">右 ▶</button>
+          </div>
+        </section>
+        <section class="log-panel">
+          <h2>不安定ログ</h2>
+          <ul id="event-log"></ul>
+        </section>
+      </main>
+    </div>
+    <script src="game.js"></script>
+  </body>
+</html>
