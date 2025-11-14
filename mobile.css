@@ -35,7 +35,7 @@ body.mobile-layout .side-info {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr;
   text-orientation: mixed;
   gap: 10px;
   color: #fffbef;
