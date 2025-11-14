@@ -75,16 +75,16 @@ function createMatrix() {
 }
 
 function rotate(matrix, dir) {
-  // 転置してから左右または上下を反転
-  const clone = matrix.map((row) => [...row]);
-  for (let y = 0; y < clone.length; y++) {
-    for (let x = 0; x < y; x++) {
-      [clone[x][y], clone[y][x]] = [clone[y][x], clone[x][y]];
-    }
+  // 新しい行列を生成して回転後の形状を作る
+  const height = matrix.length;
+  const width = matrix[0].length;
+  const rotated = Array.from({ length: width }, (_, x) =>
+    matrix.map((row) => (row[x] !== undefined ? row[x] : 0))
+  );
+  if (dir > 0) {
+    return rotated.map((row) => row.reverse());
   }
-  return dir > 0
-    ? clone.map((row) => row.reverse())
-    : clone.reverse();
+  return rotated.reverse();
 }
 
 function logEvent(message) {
