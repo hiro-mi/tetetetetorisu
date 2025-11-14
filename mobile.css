@@ -4,22 +4,20 @@ body.mobile-layout {
   align-items: center;
   justify-content: center;
   padding: calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 8px);
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 body.mobile-layout .wrapper {
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 8px;
-  width: min(100%, 420px);
+  gap: 6px;
+  width: min(100%, 390px);
   height: 100%;
-  padding: 10px;
+  padding: 8px 10px;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.64);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(4px);
-  overflow: hidden;
 }
 
 body.mobile-layout header {
@@ -42,42 +40,50 @@ body.mobile-layout header p {
 body.mobile-layout main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-height: 0;
   flex: 1;
 }
 
 body.mobile-layout .game-layout {
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 0.68fr) minmax(0, 0.32fr);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 8px;
+  width: 100%;
   min-height: 0;
-  align-items: stretch;
 }
 
 body.mobile-layout .play-area {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 6px;
-  min-height: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 body.mobile-layout #board {
-  width: 100%;
-  height: 100%;
+  width: min(100%, 220px);
   aspect-ratio: 1 / 2;
   border-width: 3px;
-  max-height: 100%;
+}
+
+body.mobile-layout .info-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 6px;
+  width: 100%;
+  align-items: stretch;
+  min-height: 0;
 }
 
 body.mobile-layout .status-panel {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
   padding: 8px;
   width: 100%;
   font-size: 0.7rem;
+  align-content: start;
 }
 
 body.mobile-layout .status-panel .stat {
@@ -108,7 +114,6 @@ body.mobile-layout .log-panel {
   gap: 3px;
   font-size: 0.7rem;
   overflow: hidden;
-  height: 100%;
 }
 
 body.mobile-layout .log-panel h2 {
@@ -129,6 +134,7 @@ body.mobile-layout .log-panel ul {
   display: grid;
   gap: 4px;
   padding: 4px 0;
+  width: 100%;
 }
 
 .touch-controls .touch-row {
@@ -183,10 +189,10 @@ body.mobile-layout .footer-switch::before {
   }
 
   body.mobile-layout .wrapper {
-    width: min(100%, 460px);
+    width: min(100%, 420px);
   }
 
   body.mobile-layout #board {
-    max-width: 210px;
+    max-width: 220px;
   }
 }
