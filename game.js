@@ -181,6 +181,7 @@ class TeteGame {
     this.dropCounter = 0;
     logEvent("新しい地獄が始まった。");
     this.update();
+    startModeCycle(this);
   }
 
   pause() {
@@ -188,6 +189,7 @@ class TeteGame {
     cancelAnimationFrame(this.animationId);
     this.running = false;
     logEvent("一時停止。逃げても状況は良くならない。");
+    stopModeCycle();
   }
 
   resume() {
@@ -197,6 +199,7 @@ class TeteGame {
     this.dropCounter = 0;
     this.update();
     logEvent("再開。覚悟しろ。");
+    startModeCycle(this);
   }
 
   reset() {
@@ -226,6 +229,7 @@ class TeteGame {
   gameOver() {
     this.running = false;
     cancelAnimationFrame(this.animationId);
+    stopModeCycle();
     logEvent("ハードロック！ゲームオーバー。");
     alert("雑に終了しました。スタートで再挑戦。");
   }
@@ -644,14 +648,27 @@ function applyMode(game, mode) {
 }
 
 function startModeCycle(game) {
+  if (!game || !game.running) {
+    return;
+  }
   if (modeTimer) {
     clearInterval(modeTimer);
   }
   applyMode(game, currentMode);
   modeTimer = setInterval(() => {
+    if (!game.running) {
+      return;
+    }
     const next = currentMode === Mode.NORMAL ? Mode.KUSOGE : Mode.NORMAL;
     applyMode(game, next);
   }, 5000);
+}
+
+function stopModeCycle() {
+  if (modeTimer) {
+    clearInterval(modeTimer);
+    modeTimer = null;
+  }
 }
 
 function initGame() {
@@ -681,6 +698,7 @@ function initGame() {
   clearBoardBackground();
 
   const game = new TeteGame();
+  applyMode(game, Mode.NORMAL);
 
   startBtn.addEventListener("click", () => {
     game.start();
