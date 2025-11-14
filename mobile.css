@@ -2,17 +2,18 @@ body.mobile-layout {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 8px);
   min-height: 100vh;
 }
 
 body.mobile-layout .wrapper {
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   gap: 6px;
   width: min(100%, 390px);
-  height: 100%;
+  height: auto;
+  min-height: 0;
   padding: 8px 10px;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.64);
@@ -20,21 +21,42 @@ body.mobile-layout .wrapper {
   backdrop-filter: blur(4px);
 }
 
-body.mobile-layout header {
+body.mobile-layout .screen-grid {
   display: grid;
-  gap: 4px;
-  margin: 0;
-  text-align: center;
+  grid-template-columns: auto 1fr auto;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-height: 0;
 }
 
-body.mobile-layout header h1 {
-  font-size: 1.25rem;
+body.mobile-layout .side-caption {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  gap: 6px;
+  padding: 6px 0;
+  color: #fffbef;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+body.mobile-layout .side-caption h1,
+body.mobile-layout .side-caption p {
+  margin: 0;
+}
+
+body.mobile-layout .side-caption h1 {
+  font-size: 1.05rem;
   line-height: 1.1;
+  font-weight: 700;
 }
 
-body.mobile-layout header p {
+body.mobile-layout .side-caption--description {
   font-size: 0.72rem;
-  margin: 0;
+  opacity: 0.9;
 }
 
 body.mobile-layout main {
