@@ -14,6 +14,7 @@ let logEl;
 let startBtn;
 let pauseBtn;
 let body;
+let kusogeLayer;
 let flashTimer = null;
 let modeTimer = null;
 
@@ -421,6 +422,132 @@ function rand255() {
   return (Math.random() * 255) | 0;
 }
 
+function randRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function createBulletPath() {
+  const orientation = Math.random();
+  let startX;
+  let startY;
+  let endX;
+  let endY;
+  if (orientation < 0.33) {
+    startX = -15;
+    endX = 115;
+    startY = randRange(-20, 120);
+    endY = startY + randRange(-30, 30);
+  } else if (orientation < 0.66) {
+    startX = 115;
+    endX = -15;
+    startY = randRange(-20, 120);
+    endY = startY + randRange(-30, 30);
+  } else {
+    startX = randRange(-10, 110);
+    endX = startX + randRange(-30, 30);
+    if (Math.random() > 0.5) {
+      startY = 120;
+      endY = -20;
+    } else {
+      startY = -20;
+      endY = 120;
+    }
+  }
+  const midX = (startX + endX) / 2 + randRange(-20, 20);
+  const midY = (startY + endY) / 2 + randRange(-20, 20);
+  const twist = randRange(240, 540);
+  return {
+    startX,
+    startY,
+    midX,
+    midY,
+    endX,
+    endY,
+    twist,
+    halfTwist: twist / 2,
+  };
+}
+
+function setupKusogeBackground() {
+  kusogeLayer = document.getElementById("kusoge-background");
+  if (!kusogeLayer) {
+    return;
+  }
+  kusogeLayer.setAttribute("aria-hidden", "true");
+  const tetLayer = kusogeLayer.querySelector(".tetromino-swarm");
+  const bulletLayer = kusogeLayer.querySelector(".danmaku-field");
+  if (!tetLayer || !bulletLayer) {
+    return;
+  }
+
+  if (tetLayer.childElementCount === 0) {
+    const tetrominoClasses = [
+      "piece-i",
+      "piece-t",
+      "piece-l",
+      "piece-j",
+      "piece-o",
+      "piece-s",
+      "piece-z",
+    ];
+    const tetColors = Object.values(colors).filter((value) => value !== colors[0]);
+    const tetrominoCount = 14;
+    for (let i = 0; i < tetrominoCount; i += 1) {
+      const element = document.createElement("span");
+      const pieceClass = tetrominoClasses[(Math.random() * tetrominoClasses.length) | 0];
+      const color = tetColors[(Math.random() * tetColors.length) | 0];
+      element.className = `tetromino ${pieceClass}`;
+      element.style.setProperty("--tet-color", color);
+      element.style.setProperty("--start-x", `${randRange(-12, 112).toFixed(1)}vw`);
+      element.style.setProperty("--end-x", `${randRange(-12, 112).toFixed(1)}vw`);
+      element.style.setProperty("--start-y", `${randRange(-45, -12).toFixed(1)}vh`);
+      element.style.setProperty("--end-y", `${randRange(110, 160).toFixed(1)}vh`);
+      element.style.setProperty("--spin", `${Math.round(randRange(3, 6)) * 180}deg`);
+      element.style.animationDuration = `${randRange(9, 18).toFixed(1)}s`;
+      element.style.animationDelay = `${randRange(-18, 0).toFixed(1)}s`;
+      tetLayer.appendChild(element);
+    }
+  }
+
+  if (bulletLayer.childElementCount === 0) {
+    const bulletColors = [
+      "255, 40, 160",
+      "80, 240, 255",
+      "255, 200, 40",
+      "200, 120, 255",
+    ];
+    const bulletCount = 26;
+    for (let i = 0; i < bulletCount; i += 1) {
+      const element = document.createElement("span");
+      element.className = "bullet";
+      element.style.setProperty(
+        "--bullet-rgb",
+        bulletColors[(Math.random() * bulletColors.length) | 0]
+      );
+      const path = createBulletPath();
+      element.style.setProperty("--start-x", `${path.startX.toFixed(1)}vw`);
+      element.style.setProperty("--start-y", `${path.startY.toFixed(1)}vh`);
+      element.style.setProperty("--mid-x", `${path.midX.toFixed(1)}vw`);
+      element.style.setProperty("--mid-y", `${path.midY.toFixed(1)}vh`);
+      element.style.setProperty("--end-x", `${path.endX.toFixed(1)}vw`);
+      element.style.setProperty("--end-y", `${path.endY.toFixed(1)}vh`);
+      element.style.setProperty("--half-twist", `${path.halfTwist.toFixed(0)}deg`);
+      element.style.setProperty("--twist", `${path.twist.toFixed(0)}deg`);
+      element.style.animationDuration = `${randRange(3.5, 7.5).toFixed(1)}s`;
+      element.style.animationDelay = `${randRange(-7.5, 0).toFixed(1)}s`;
+      bulletLayer.appendChild(element);
+    }
+  }
+}
+
+function toggleKusogeBackground(active) {
+  if (!kusogeLayer) {
+    return;
+  }
+  kusogeLayer.classList.toggle("is-active", active);
+  kusogeLayer.setAttribute("aria-hidden", active ? "false" : "true");
+}
+
 function updateScoreboard(game) {
   scoreEl.textContent = game.score;
   linesEl.textContent = game.lines;
@@ -446,6 +573,7 @@ function applyMode(game, mode) {
   currentMode = mode;
   body.classList.remove("mode-normal", "mode-kusoge");
   body.classList.add(mode === Mode.NORMAL ? "mode-normal" : "mode-kusoge");
+  toggleKusogeBackground(mode === Mode.KUSOGE);
   if (modeEl) {
     modeEl.textContent = mode === Mode.NORMAL ? "NORMAL" : "クソゲー";
   }
@@ -489,6 +617,8 @@ function initGame() {
   startBtn = document.getElementById("start-btn");
   pauseBtn = document.getElementById("pause-btn");
   body = document.body;
+  setupKusogeBackground();
+  toggleKusogeBackground(currentMode === Mode.KUSOGE);
 
   if (!canvas || !ctx || !scoreEl || !linesEl || !levelEl || !moodEl || !logEl) {
     console.error("必要な要素が見つからずゲーム初期化に失敗しました。");
