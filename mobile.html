@@ -21,23 +21,14 @@
         </header>
         <main>
           <div class="game-layout">
-            <section class="play-area">
-              <canvas id="board" width="240" height="480" aria-label="プレイフィールド"></canvas>
-            </section>
-            <section class="touch-controls" aria-label="タッチ操作ボタン">
-              <div class="touch-row touch-row--primary">
-                <button id="start-btn" class="touch-btn control-btn" type="button">スタート / リセット</button>
-                <button id="pause-btn" class="touch-btn control-btn" type="button">ポーズ</button>
-                <button class="touch-btn" type="button" data-control="rotate">回転</button>
-                <button class="touch-btn" type="button" data-control="drop">強制落下</button>
-              </div>
-              <div class="touch-row touch-row--movement">
-                <button class="touch-btn" type="button" data-control="left">◀ 左</button>
-                <button class="touch-btn" type="button" data-control="down">▼ 落下</button>
-                <button class="touch-btn" type="button" data-control="right">右 ▶</button>
-              </div>
-            </section>
-            <div class="info-row">
+            <div class="game-frame">
+              <section class="log-panel">
+                <h2>不安定ログ</h2>
+                <ul id="event-log"></ul>
+              </section>
+              <section class="play-area">
+                <canvas id="board" width="240" height="480" aria-label="プレイフィールド"></canvas>
+              </section>
               <div class="status-panel">
                 <div class="stat">
                   <span class="label">SCORE</span>
@@ -64,11 +55,20 @@
                   <p>キーボードがあれば従来の矢印キーでも動きます。</p>
                 </div>
               </div>
-              <section class="log-panel">
-                <h2>不安定ログ</h2>
-                <ul id="event-log"></ul>
-              </section>
             </div>
+            <section class="touch-controls" aria-label="タッチ操作ボタン">
+              <div class="touch-row touch-row--primary">
+                <button id="start-btn" class="touch-btn control-btn" type="button">スタート / リセット</button>
+                <button id="pause-btn" class="touch-btn control-btn" type="button">ポーズ</button>
+                <button class="touch-btn" type="button" data-control="rotate">回転</button>
+                <button class="touch-btn" type="button" data-control="drop">強制落下</button>
+              </div>
+              <div class="touch-row touch-row--movement">
+                <button class="touch-btn" type="button" data-control="left">◀ 左</button>
+                <button class="touch-btn" type="button" data-control="down">▼ 落下</button>
+                <button class="touch-btn" type="button" data-control="right">右 ▶</button>
+              </div>
+            </section>
           </div>
         </main>
         <aside class="side-caption side-caption--description" aria-label="雑な解説">
