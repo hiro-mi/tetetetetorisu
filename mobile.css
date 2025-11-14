@@ -1,7 +1,12 @@
 body.mobile-layout {
+  display: flex;
+  flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
   padding: 16px 12px 32px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body.mobile-layout .wrapper {
