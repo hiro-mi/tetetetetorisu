@@ -444,4 +444,8 @@ function initGame() {
   });
 }
 
-window.addEventListener("DOMContentLoaded", initGame);
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", initGame);
+} else {
+  initGame();
+}
