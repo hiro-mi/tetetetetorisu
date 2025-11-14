@@ -1,19 +1,18 @@
 // 雑なテトリス風ゲームロジック。本格的なバランスは求めない。
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext("2d");
+let canvas;
+let ctx;
 const scale = 24;
 const cols = 10;
 const rows = 20;
 
-const scoreEl = document.getElementById("score");
-const linesEl = document.getElementById("lines");
-const levelEl = document.getElementById("level");
-const moodEl = document.getElementById("mood");
-const logEl = document.getElementById("event-log");
-const startBtn = document.getElementById("start-btn");
-const pauseBtn = document.getElementById("pause-btn");
-
-const body = document.body;
+let scoreEl;
+let linesEl;
+let levelEl;
+let moodEl;
+let logEl;
+let startBtn;
+let pauseBtn;
+let body;
 let flashTimer = null;
 
 const shapes = [
@@ -376,6 +375,7 @@ function drawMatrix(matrix, offset) {
 }
 
 function triggerFlash() {
+  if (!body) return;
   const color = `rgba(${rand255()}, ${rand255()}, ${rand255()}, 0.2)`;
   body.style.background = `radial-gradient(circle, ${color}, #0d0d0d 70%)`;
   clearTimeout(flashTimer);
@@ -383,6 +383,7 @@ function triggerFlash() {
 }
 
 function clearBoardBackground() {
+  if (!body) return;
   body.style.background = "#1a1a1a";
 }
 
@@ -402,19 +403,45 @@ function updateScoreboard(game) {
   }
 }
 
-const game = new TeteGame();
+function initGame() {
+  canvas = document.getElementById("board");
+  ctx = canvas ? canvas.getContext("2d") : null;
+  scoreEl = document.getElementById("score");
+  linesEl = document.getElementById("lines");
+  levelEl = document.getElementById("level");
+  moodEl = document.getElementById("mood");
+  logEl = document.getElementById("event-log");
+  startBtn = document.getElementById("start-btn");
+  pauseBtn = document.getElementById("pause-btn");
+  body = document.body;
 
-startBtn.addEventListener("click", () => {
-  game.start();
-  pauseBtn.textContent = "ポーズ";
-});
-
-pauseBtn.addEventListener("click", () => {
-  if (game.running) {
-    game.pause();
-    pauseBtn.textContent = "再開";
-  } else {
-    game.resume();
-    pauseBtn.textContent = "ポーズ";
+  if (!canvas || !ctx || !scoreEl || !linesEl || !levelEl || !moodEl || !logEl) {
+    console.error("必要な要素が見つからずゲーム初期化に失敗しました。");
+    return;
   }
-});
+  if (!startBtn || !pauseBtn) {
+    console.error("操作ボタンが見つからずゲーム初期化に失敗しました。");
+    return;
+  }
+
+  clearBoardBackground();
+
+  const game = new TeteGame();
+
+  startBtn.addEventListener("click", () => {
+    game.start();
+    pauseBtn.textContent = "ポーズ";
+  });
+
+  pauseBtn.addEventListener("click", () => {
+    if (game.running) {
+      game.pause();
+      pauseBtn.textContent = "再開";
+    } else {
+      game.resume();
+      pauseBtn.textContent = "ポーズ";
+    }
+  });
+}
+
+window.addEventListener("DOMContentLoaded", initGame);
