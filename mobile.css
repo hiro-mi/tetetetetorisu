@@ -50,7 +50,7 @@ body.mobile-layout main {
 body.mobile-layout .game-layout {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.4fr);
+  grid-template-columns: minmax(0, 0.68fr) minmax(0, 0.32fr);
   gap: 8px;
   min-height: 0;
   align-items: stretch;
@@ -108,6 +108,7 @@ body.mobile-layout .log-panel {
   gap: 3px;
   font-size: 0.7rem;
   overflow: hidden;
+  height: 100%;
 }
 
 body.mobile-layout .log-panel h2 {
@@ -121,6 +122,7 @@ body.mobile-layout .log-panel ul {
   margin: 0;
   padding: 0;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .touch-controls {
