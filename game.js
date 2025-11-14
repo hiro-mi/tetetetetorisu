@@ -506,6 +506,7 @@ function initGame() {
   startBtn.addEventListener("click", () => {
     game.start();
     pauseBtn.textContent = "ポーズ";
+    defocusActiveButton(startBtn);
   });
 
   pauseBtn.addEventListener("click", () => {
@@ -516,9 +517,19 @@ function initGame() {
       game.resume();
       pauseBtn.textContent = "ポーズ";
     }
+    defocusActiveButton(pauseBtn);
   });
 
   startModeCycle(game);
+}
+
+function defocusActiveButton(button) {
+  if (!button) return;
+  // クリック後にフォーカスが残ると Space キーでボタンが再度押されてしまう。
+  // ゲーム操作を優先させるため、フォーカスを外しておく。
+  if (document.activeElement === button) {
+    button.blur();
+  }
 }
 
 if (document.readyState === "loading") {
