@@ -35,28 +35,29 @@ body.mobile-layout .side-info {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  writing-mode: vertical-lr;
-  text-orientation: mixed;
   gap: 10px;
-  color: #fffbef;
   letter-spacing: 0.08em;
   white-space: nowrap;
+  color: inherit;
 }
 
 body.mobile-layout .side-info h1,
 body.mobile-layout .side-info p {
   margin: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 body.mobile-layout .side-info h1 {
   font-size: 0.94rem;
   line-height: 1.15;
   font-weight: 700;
+  color: #f54582;
 }
 
 body.mobile-layout .side-info p {
   font-size: 0.74rem;
-  opacity: 0.85;
+  color: inherit;
 }
 
 body.mobile-layout .game-stack {
