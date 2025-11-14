@@ -23,13 +23,13 @@ body.mobile-layout .wrapper {
 
 body.mobile-layout .screen-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.75fr);
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.78fr);
   grid-template-rows: auto 1fr;
   grid-template-areas:
-    "info info"
-    "game status";
-  align-items: start;
-  row-gap: 16px;
+    "info game status"
+    "info game status";
+  align-items: stretch;
+  row-gap: 12px;
   column-gap: 12px;
   width: 100%;
   min-height: 0;
@@ -37,11 +37,14 @@ body.mobile-layout .screen-grid {
 
 body.mobile-layout .side-info {
   grid-area: info;
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  align-items: start;
-  justify-items: start;
-  gap: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  padding-top: 4px;
+  padding-right: 4px;
+  min-width: 0;
   letter-spacing: 0.08em;
   white-space: normal;
   color: inherit;
@@ -50,23 +53,31 @@ body.mobile-layout .side-info {
 body.mobile-layout .side-info__title,
 body.mobile-layout .side-info__tagline {
   margin: 0;
-  writing-mode: horizontal-tb;
-  text-orientation: mixed;
 }
 
 body.mobile-layout .side-info__title {
-  font-size: 1.04rem;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 1.12rem;
   line-height: 1.1;
   font-weight: 700;
   color: #f54582;
-  text-align: left;
+  text-align: center;
+  letter-spacing: 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
 }
 
 body.mobile-layout .side-info__tagline {
-  font-size: 0.9rem;
+  max-width: 132px;
+  writing-mode: horizontal-tb;
+  font-size: 0.92rem;
   line-height: 1.35;
   color: inherit;
   text-align: left;
+  flex: 1 1 120px;
 }
 
 body.mobile-layout .game-stack {
@@ -226,11 +237,11 @@ body.mobile-layout .footer-switch::before {
   }
 
   body.mobile-layout .screen-grid {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    grid-template-columns: auto minmax(0, 1.08fr) minmax(0, 0.78fr);
   }
 
-  body.mobile-layout .side-info {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  body.mobile-layout .side-info__tagline {
+    max-width: 148px;
   }
 
   body.mobile-layout #board {
