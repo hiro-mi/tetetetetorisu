@@ -40,6 +40,7 @@ body.mobile-layout header p {
 body.mobile-layout main {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 6px;
   min-height: 0;
   flex: 1;
@@ -111,7 +112,7 @@ body.mobile-layout .status-panel .stat.tips {
 body.mobile-layout .log-panel {
   display: grid;
   grid-template-rows: auto 1fr;
-  min-height: 140px;
+  min-height: 120px;
   padding: 8px;
   gap: 4px;
   font-size: 0.7rem;
@@ -198,5 +199,39 @@ body.mobile-layout .footer-switch::before {
 
   body.mobile-layout #board {
     max-width: 220px;
+  }
+}
+
+@media (max-height: 760px) {
+  body.mobile-layout {
+    justify-content: flex-start;
+  }
+
+  body.mobile-layout .wrapper {
+    height: auto;
+    min-height: 0;
+  }
+
+  body.mobile-layout #board {
+    width: min(100%, 200px);
+  }
+
+  .touch-controls {
+    padding-top: 0;
+  }
+}
+
+@media (max-height: 660px) {
+  body.mobile-layout #board {
+    width: min(100%, 180px);
+  }
+
+  .touch-controls .touch-btn {
+    padding: 4px 2px;
+    font-size: 0.7rem;
+  }
+
+  body.mobile-layout .log-panel {
+    min-height: 100px;
   }
 }
