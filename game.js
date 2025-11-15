@@ -990,11 +990,17 @@ function applyMode(game, mode) {
   if (modeEl) {
     modeEl.textContent = mode === Mode.NORMAL ? "NORMAL" : "クソゲー";
   }
-  if (previous !== mode && logEl) {
+  let pendingModeLog = null;
+  const shouldLogModeChange = previous !== mode && logEl;
+  if (shouldLogModeChange) {
     const messages = mode === Mode.KUSOGE ? kusogeStartMessages : kusogeEndMessages;
     const message = pickRandomMessage(messages);
     if (message) {
-      logEvent(message);
+      if (mode === Mode.KUSOGE) {
+        logEvent(message);
+      } else {
+        pendingModeLog = message;
+      }
     }
   }
   if (game) {
@@ -1004,6 +1010,9 @@ function applyMode(game, mode) {
       const trigger = previous === Mode.KUSOGE ? "mode-resume" : "mode-start";
       rollControlMode(game, trigger);
     }
+  }
+  if (pendingModeLog) {
+    logEvent(pendingModeLog);
   }
 }
 
