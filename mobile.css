@@ -127,6 +127,16 @@ body.mobile-layout .status-panel .stat {
   font-size: 0.64rem;
 }
 
+body.mobile-layout .status-panel .stat span:last-child {
+  text-align: center;
+}
+
+body.mobile-layout #level {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  white-space: normal;
+}
+
 body.mobile-layout .status-panel .stat .label {
   font-size: 0.54rem;
   letter-spacing: 0.05em;
