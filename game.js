@@ -4,6 +4,10 @@ let ctx;
 const scale = 24;
 const cols = 10;
 const rows = 20;
+const BASE_DROP_INTERVAL = 800;
+const MIN_DROP_INTERVAL = 200;
+const DROP_INTERVAL_STEP = 60;
+const LINES_PER_LEVEL = 5;
 
 let scoreEl;
 let linesEl;
@@ -183,7 +187,7 @@ class TeteGame {
     this.piece = null;
     this.pos = { x: 0, y: 0 };
     this.dropCounter = 0;
-    this.dropInterval = 800;
+    this.dropInterval = BASE_DROP_INTERVAL;
     this.lastTime = 0;
     this.running = false;
     this.score = 0;
@@ -278,7 +282,7 @@ class TeteGame {
     this.score = 0;
     this.lines = 0;
     this.level = 1;
-    this.dropInterval = 800;
+    this.dropInterval = BASE_DROP_INTERVAL;
     this.controlInverted = false;
     this.forceRerollOnRotate = false;
     this.doubleAction = false;
@@ -489,13 +493,34 @@ class TeteGame {
   }
 
   bumpLevel() {
-    const newLevel = 1 + Math.floor(this.lines / 5);
+    const newLevel = 1 + Math.floor(this.lines / LINES_PER_LEVEL);
     if (newLevel !== this.level) {
       this.level = newLevel;
-      this.dropInterval = Math.max(200, 800 - this.level * 60);
+      this.dropInterval = Math.max(
+        MIN_DROP_INTERVAL,
+        BASE_DROP_INTERVAL - this.level * DROP_INTERVAL_STEP
+      );
       moodEl.textContent = moods[this.level % moods.length];
-      logEvent(`レベル ${this.level}。誰も望んでいない高速化。`);
+      const multiplier = this.getDropSpeedMultiplier();
+      const linesToNext = this.getLinesToNextLevel();
+      const speedNote =
+        this.dropInterval === MIN_DROP_INTERVAL
+          ? "落下速度が限界に到達した。"
+          : `さらに ${linesToNext} ラインで加速予定。`;
+      logEvent(
+        `レベル ${this.level}。落下速度 ${multiplier.toFixed(1)} 倍。${speedNote}`
+      );
     }
+  }
+
+  getLinesToNextLevel() {
+    const nextTarget = this.level * LINES_PER_LEVEL;
+    return Math.max(0, nextTarget - this.lines);
+  }
+
+  getDropSpeedMultiplier() {
+    const multiplier = BASE_DROP_INTERVAL / this.dropInterval;
+    return Number.isFinite(multiplier) ? Math.max(1, multiplier) : 1;
   }
 
 }
@@ -739,7 +764,7 @@ function toggleKusogeBackground(active) {
 function updateScoreboard(game) {
   scoreEl.textContent = game.score;
   linesEl.textContent = game.lines;
-  levelEl.textContent = game.level;
+  levelEl.textContent = formatLevelDisplay(game);
   if (modeEl) {
     modeEl.textContent = isNormalMode() ? "NORMAL" : "クソゲー";
   }
@@ -753,6 +778,20 @@ function updateScoreboard(game) {
   } else {
     moodEl.textContent = "🙃";
   }
+}
+
+function formatLevelDisplay(game) {
+  if (!game) {
+    return "?";
+  }
+  if (typeof game.getLinesToNextLevel !== "function") {
+    return String(game.level);
+  }
+  if (game.dropInterval <= MIN_DROP_INTERVAL) {
+    return `${game.level}（速度限界）`;
+  }
+  const linesToNext = game.getLinesToNextLevel();
+  return `${game.level}（あと${linesToNext}ライン）`;
 }
 
 function applyMode(game, mode) {
