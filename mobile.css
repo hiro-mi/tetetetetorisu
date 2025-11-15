@@ -6,6 +6,9 @@ body.mobile-layout {
   padding: calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 48px);
   min-height: 100vh;
   --mobile-cell-size: clamp(15px, 5.8vw, 20.8px);
+  --mobile-playfield-height: calc(var(--mobile-cell-size) * 20);
+  /* include the playfield border (3px * 2) so we can match its outer height elsewhere */
+  --mobile-playfield-outer-height: calc(var(--mobile-playfield-height) + 6px);
 }
 
 body.mobile-layout .wrapper {
@@ -101,7 +104,7 @@ body.mobile-layout .play-area {
 
 body.mobile-layout #board {
   width: calc(var(--mobile-cell-size) * 10);
-  height: calc(var(--mobile-cell-size) * 20);
+  height: var(--mobile-playfield-height);
   border-width: 3px;
 }
 
@@ -116,6 +119,8 @@ body.mobile-layout .status-panel {
   width: 100%;
   max-width: 132px;
   min-width: 0;
+  height: var(--mobile-playfield-outer-height);
+  box-sizing: border-box;
   font-size: 0.66rem;
 }
 
