@@ -102,6 +102,58 @@ const kusogeEffectPool = Object.values(KusogeEffects);
 let currentKusogeEffects = [];
 let highScore = 0;
 
+const startLogMessages = [
+  "新しい地獄が始まった。",
+  "開幕から嫌な予感しかしない。",
+  "スタートボタンを押したことを後悔する時間です。",
+  "雑な舞台の幕が上がった。",
+  "誰も望まぬ開戦。",
+  "落下の宴が始まる。",
+  "トラウマ生成モード、起動。",
+  "被害報告の受付を開始。",
+  "操作者の理性、現在減少中。",
+  "スタート処理完了。覚悟を捨てろ。",
+];
+
+const pauseLogMessages = [
+  "一時停止。逃げても状況は良くならない。",
+  "ゲームを止めたつもり？現実は止まらない。",
+  "休憩タイム（メンタルは休まらない）。",
+  "操作放棄を検出。しばらく待機。",
+  "一旦中断。後で泣く。",
+  "ポーズ。ここで諦め癖がつく。",
+  "休んでもブロックは夢に出る。",
+  "一時停止を宣言。地獄は保留中。",
+  "中断。とりあえず深呼吸でも。",
+  "ポーズ処理完了。逃げ場はないけど。",
+];
+
+const resumeLogMessages = [
+  "再開。覚悟しろ。",
+  "地獄タイム延長戦スタート。",
+  "再開ボタンが火遊びの合図。",
+  "休憩終了。悪夢が再装填。",
+  "戻ってきたな。盤面も絶望も準備万端。",
+  "再開処理完了。反省は無駄。",
+  "ゲーム再開。反撃の余地は少ない。",
+  "プレイ再開。さっきより酷い気がする。",
+  "再開通知：理性のHPはもうゼロだ。",
+  "地獄が目を覚ました。続行。",
+];
+
+const resetLogMessages = [
+  "ボード初期化。",
+  "記録をリセット。記憶は残る。",
+  "盤面清掃。ついでに希望も削除。",
+  "状態を初期化。つらさは初期値以下。",
+  "ボードをリセット。悪夢は再利用可能。",
+  "初期化完了。徒労のやり直し。",
+  "盤面を真っさらに。心は真っ黒に。",
+  "リセット動作成功。やり直し地獄をどうぞ。",
+  "余計なものを全消去。虚無だけ残った。",
+  "初期化完了通知：幸せのデータは見当たらない。",
+];
+
 const shapes = [
   [[1, 1, 1, 1]],
   [
@@ -194,6 +246,14 @@ function logEvent(message) {
   while (logEl.children.length > 12) {
     logEl.removeChild(logEl.lastChild);
   }
+}
+
+function getRandomMessage(messages, fallback) {
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return fallback || "";
+  }
+  const index = (Math.random() * messages.length) | 0;
+  return messages[index];
 }
 
 function loadHighScore() {
@@ -325,7 +385,7 @@ class TeteGame {
     this.running = true;
     this.lastTime = 0;
     this.dropCounter = 0;
-    logEvent("新しい地獄が始まった。");
+    logEvent(getRandomMessage(startLogMessages, "新しい地獄が始まった。"));
     this.update();
     startModeCycle(this);
   }
@@ -334,7 +394,12 @@ class TeteGame {
     if (!this.running) return;
     cancelAnimationFrame(this.animationId);
     this.running = false;
-    logEvent("一時停止。逃げても状況は良くならない。");
+    logEvent(
+      getRandomMessage(
+        pauseLogMessages,
+        "一時停止。逃げても状況は良くならない。"
+      )
+    );
     stopModeCycle();
   }
 
@@ -344,7 +409,7 @@ class TeteGame {
     this.lastTime = 0;
     this.dropCounter = 0;
     this.update();
-    logEvent("再開。覚悟しろ。");
+    logEvent(getRandomMessage(resumeLogMessages, "再開。覚悟しろ。"));
     startModeCycle(this);
   }
 
@@ -361,7 +426,7 @@ class TeteGame {
     this.controlMode = ControlMode.NONE;
     updateScoreboard(this, { skipHighScoreUpdate: true });
     clearBoardBackground();
-    logEvent("ボード初期化。");
+    logEvent(getRandomMessage(resetLogMessages, "ボード初期化。"));
   }
 
   spawnPiece() {
