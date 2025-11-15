@@ -1098,6 +1098,14 @@ function setupTouchControls(game) {
     drop: () => game.applyAction(() => game.hardDrop()),
   };
 
+  const invertedControlMap = {
+    // キーボードと同じく上下左右を逆転させ、タッチでも理不尽な挙動を再現する。
+    left: "right",
+    right: "left",
+    down: "rotate",
+    rotate: "down",
+  };
+
   const invoke = (event, control) => {
     if (event) {
       event.preventDefault();
@@ -1105,7 +1113,11 @@ function setupTouchControls(game) {
     if (!game.running) {
       return;
     }
-    const action = actionMap[control];
+    const effectiveControl =
+      game.controlInverted && currentMode === Mode.KUSOGE
+        ? invertedControlMap[control] || control
+        : control;
+    const action = actionMap[effectiveControl];
     if (action) {
       action();
     }
