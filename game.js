@@ -316,7 +316,7 @@ class TeteGame {
     this.forceRerollOnRotate = false;
     this.doubleAction = false;
     this.controlMode = ControlMode.NONE;
-    updateScoreboard(this);
+    updateScoreboard(this, { skipHighScoreUpdate: true });
     clearBoardBackground();
     logEvent("ボード初期化。");
   }
@@ -788,7 +788,11 @@ function toggleKusogeBackground(active) {
   applyKusogeEffects(effects, active);
   kusogeLayer.classList.toggle("is-active", active);
   kusogeLayer.setAttribute("aria-hidden", active ? "false" : "true");
-}function updateScoreboard(game) {
+}
+
+function updateScoreboard(game, options = {}) {
+  const { skipHighScoreUpdate = false } = options;
+
   scoreEl.textContent = game.score;
   linesEl.textContent = game.lines;
 
@@ -796,7 +800,7 @@ function toggleKusogeBackground(active) {
   levelEl.textContent = formatLevelDisplay(game);
 
   // ハイスコア更新ロジックは main 側の変更を取り込む
-  if (game && game.score > highScore) {
+  if (!skipHighScoreUpdate && game && game.score > highScore) {
     highScore = game.score;
     saveHighScore(highScore);
   }
