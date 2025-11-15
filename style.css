@@ -520,11 +520,11 @@ body.mode-normal .field-status {
 .status-panel {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 16px;
-  width: 240px;
+  padding: 12px;
+  width: 160px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   height: var(--playfield-height);
 }
 
