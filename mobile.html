@@ -22,7 +22,22 @@
         </aside>
         <main class="game-stack">
           <section class="play-area">
-            <canvas id="board" width="240" height="480" aria-label="プレイフィールド"></canvas>
+            <div class="board-wrapper">
+              <canvas
+                id="board"
+                width="240"
+                height="480"
+                aria-label="プレイフィールド"
+              ></canvas>
+              <div
+                id="field-status"
+                class="field-status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                待機中……
+              </div>
+            </div>
           </section>
           <section class="touch-controls" aria-label="タッチ操作ボタン">
             <div class="touch-row touch-row--primary">
