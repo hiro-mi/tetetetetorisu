@@ -21,6 +21,7 @@ let startBtn;
 let pauseBtn;
 let body;
 let kusogeLayer;
+let kusogeFaceEl;
 let flashTimer = null;
 let modeTimer = null;
 let fieldStatusTimer = null;
@@ -83,12 +84,16 @@ const kusogeEndMessages = [
   "悪夢が霧散。今のうちにラインを稼げ。",
 ];
 
-function pickRandomMessage(messages) {
+function pickRandomMessage(messages, fallback = "") {
   if (!Array.isArray(messages) || messages.length === 0) {
-    return "";
+    return typeof fallback === "string" ? fallback : "";
   }
   const index = (Math.random() * messages.length) | 0;
-  return messages[index];
+  const value = messages[index];
+  if (typeof value !== "string" || value.length === 0) {
+    return typeof fallback === "string" ? fallback : "";
+  }
+  return value;
 }
 
 const KusogeEffects = {
@@ -103,6 +108,19 @@ const kusogeEffectPool = Object.values(KusogeEffects);
 
 let currentKusogeEffects = [];
 let highScore = 0;
+
+const kusogeFaceGlyphs = [
+  "🤡",
+  "😵‍💫",
+  "🥴",
+  "🤢",
+  "🫨",
+  "👻",
+  "👹",
+  "🫥",
+  "😈",
+  "🤖",
+];
 
 const startLogMessages = [
   "新しい地獄が始まった。",
@@ -926,6 +944,44 @@ function setupKusogeBackground() {
   }
 }
 
+function setupKusogeFace() {
+  kusogeFaceEl = document.getElementById("kusoge-face");
+  if (!kusogeFaceEl) {
+    return;
+  }
+  kusogeFaceEl.setAttribute("aria-hidden", "true");
+  const glyph = pickRandomMessage(kusogeFaceGlyphs, "🤡");
+  if (glyph) {
+    kusogeFaceEl.textContent = glyph;
+  }
+  toggleKusogeFace(false);
+}
+
+function toggleKusogeFace(active) {
+  if (!kusogeFaceEl) {
+    return;
+  }
+  kusogeFaceEl.setAttribute("aria-hidden", active ? "false" : "true");
+  if (!active) {
+    kusogeFaceEl.classList.remove("is-visible");
+    kusogeFaceEl.style.removeProperty("--face-scale");
+    kusogeFaceEl.style.removeProperty("--face-tilt");
+    kusogeFaceEl.style.removeProperty("--face-hue");
+    return;
+  }
+  const glyph = pickRandomMessage(kusogeFaceGlyphs, "😵‍💫");
+  if (glyph) {
+    kusogeFaceEl.textContent = glyph;
+  }
+  const scale = randRange(0.92, 1.22).toFixed(2);
+  const tilt = randRange(-14, 14).toFixed(1);
+  const hue = Math.round(randRange(260, 360));
+  kusogeFaceEl.style.setProperty("--face-scale", scale);
+  kusogeFaceEl.style.setProperty("--face-tilt", `${tilt}deg`);
+  kusogeFaceEl.style.setProperty("--face-hue", `${hue}deg`);
+  kusogeFaceEl.classList.add("is-visible");
+}
+
 function toggleKusogeBackground(active) {
   if (!kusogeLayer) {
     return;
@@ -990,6 +1046,7 @@ function applyMode(game, mode) {
   body.classList.remove("mode-normal", "mode-kusoge");
   body.classList.add(mode === Mode.NORMAL ? "mode-normal" : "mode-kusoge");
   toggleKusogeBackground(mode === Mode.KUSOGE);
+  toggleKusogeFace(mode === Mode.KUSOGE);
   if (modeEl) {
     modeEl.textContent = mode === Mode.NORMAL ? "NORMAL" : "クソゲー";
   }
@@ -1068,8 +1125,10 @@ function initGame() {
   startBtn = document.getElementById("start-btn");
   pauseBtn = document.getElementById("pause-btn");
   body = document.body;
+  setupKusogeFace();
   setupKusogeBackground();
   toggleKusogeBackground(currentMode === Mode.KUSOGE);
+  toggleKusogeFace(currentMode === Mode.KUSOGE);
 
   if (
     !canvas ||
