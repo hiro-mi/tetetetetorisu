@@ -133,7 +133,7 @@ body.mobile-layout .status-panel {
   gap: 8px;
   padding: 10px 8px;
   width: 100%;
-  max-width: 132px;
+  max-width: 118px;
   min-width: 0;
   height: var(--mobile-playfield-outer-height);
   box-sizing: border-box;
@@ -155,7 +155,7 @@ body.mobile-layout .status-panel .stat span:last-child {
 body.mobile-layout #level {
   font-size: 0.7rem;
   line-height: 1.2;
-  white-space: normal;
+  white-space: pre-line;
 }
 
 body.mobile-layout .status-panel .stat .label {

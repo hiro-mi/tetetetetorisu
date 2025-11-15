@@ -977,10 +977,10 @@ function formatLevelDisplay(game) {
     return String(game.level);
   }
   if (game.dropInterval <= MIN_DROP_INTERVAL) {
-    return `${game.level}（速度限界）`;
+    return `${game.level}\n速度限界`;
   }
   const linesToNext = game.getLinesToNextLevel();
-  return `${game.level}（あと${linesToNext}ライン）`;
+  return `${game.level}\nあと${linesToNext}ライン`;
 }
 
 function applyMode(game, mode) {
