@@ -9,6 +9,7 @@ body.mobile-layout {
   --mobile-playfield-height: calc(var(--mobile-cell-size) * 20);
   /* include the playfield border (3px * 2) so we can match its outer height elsewhere */
   --mobile-playfield-outer-height: calc(var(--mobile-playfield-height) + 6px);
+  --mobile-side-column-width: 92px;
 }
 
 body.mobile-layout .wrapper {
@@ -27,7 +28,10 @@ body.mobile-layout .wrapper {
 
 body.mobile-layout .screen-grid {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.78fr);
+  grid-template-columns:
+    minmax(0, var(--mobile-side-column-width))
+    minmax(0, 1fr)
+    minmax(0, var(--mobile-side-column-width));
   grid-template-rows: auto 1fr auto auto;
   grid-template-areas:
     "info play status"
@@ -50,6 +54,7 @@ body.mobile-layout .side-info {
   gap: 10px;
   padding-top: 4px;
   padding-right: 4px;
+  width: var(--mobile-side-column-width);
   min-width: 0;
   letter-spacing: 0.08em;
   white-space: normal;
@@ -128,29 +133,30 @@ body.mobile-layout .status-panel {
   grid-area: status;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: flex-end;
   justify-content: flex-start;
   gap: 6px;
   padding: 8px 6px;
-  width: 100%;
-  max-width: 92px;
+  width: var(--mobile-side-column-width);
+  max-width: none;
   min-width: 0;
   height: var(--mobile-playfield-outer-height);
   box-sizing: border-box;
   font-size: 0.6rem;
+  text-align: right;
 }
 
 body.mobile-layout .status-panel .stat {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 1px;
   font-size: 0.6rem;
   width: 100%;
 }
 
 body.mobile-layout .status-panel .stat span:last-child {
-  text-align: center;
+  text-align: right;
   word-break: break-word;
 }
 
@@ -163,6 +169,7 @@ body.mobile-layout #level {
 body.mobile-layout .status-panel .stat .label {
   font-size: 0.48rem;
   letter-spacing: 0.04em;
+  text-align: right;
 }
 
 body.mobile-layout .status-panel .stat.tips {
