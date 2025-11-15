@@ -979,6 +979,17 @@ function initGame() {
   applyMode(game, Mode.NORMAL);
 
   startBtn.addEventListener("click", () => {
+    if (game.running) {
+      game.pause();
+      pauseBtn.textContent = "再開";
+      const confirmed = window.confirm("本当にリセットしますか？");
+      if (!confirmed) {
+        game.resume();
+        pauseBtn.textContent = "ポーズ";
+        defocusActiveButton(startBtn);
+        return;
+      }
+    }
     game.start();
     pauseBtn.textContent = "ポーズ";
     defocusActiveButton(startBtn);
