@@ -154,6 +154,19 @@ const resetLogMessages = [
   "初期化完了通知：幸せのデータは見当たらない。",
 ];
 
+const gameOverMessages = [
+  "ハードロック！ゲームオーバー。",
+  "盤面がブロックの墓場と化した。終了。",
+  "限界突破ならず。雑に幕引き。",
+  "崩壊処理完了。続きは地獄でどうぞ。",
+  "落下事故。ゲームは理不尽に終わった。",
+  "操作が凍結。勝手にエンディング突入。",
+  "積み上げた絶望が天井に達した。終わり。",
+  "ブザーが鳴った。プレイ権は剥奪された。",
+  "なぜか突然の終演。犯人はあなた。",
+  "ゲームオーバー報告：やる気の残骸だけが残った。",
+];
+
 const shapes = [
   [[1, 1, 1, 1]],
   [
@@ -443,7 +456,7 @@ class TeteGame {
     this.running = false;
     cancelAnimationFrame(this.animationId);
     stopModeCycle();
-    logEvent("ハードロック！ゲームオーバー。");
+    logEvent(getRandomMessage(gameOverMessages, "ハードロック！ゲームオーバー。"));
     alert("雑に終了しました。スタートで再挑戦。");
   }
 
