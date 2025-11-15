@@ -602,6 +602,18 @@ main {
   width: 240px;
   height: var(--playfield-height);
   flex-shrink: 0;
+  z-index: 12;
+}
+
+.board-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  background: #000;
+  opacity: 0.95;
+  z-index: -1;
+  border-radius: 12px;
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.75);
 }
 
 #board {
