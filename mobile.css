@@ -130,37 +130,39 @@ body.mobile-layout .status-panel {
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 8px;
-  padding: 10px 8px;
+  gap: 6px;
+  padding: 8px 6px;
   width: 100%;
-  max-width: 118px;
+  max-width: 92px;
   min-width: 0;
   height: var(--mobile-playfield-outer-height);
   box-sizing: border-box;
-  font-size: 0.66rem;
+  font-size: 0.6rem;
 }
 
 body.mobile-layout .status-panel .stat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  font-size: 0.64rem;
+  gap: 1px;
+  font-size: 0.6rem;
+  width: 100%;
 }
 
 body.mobile-layout .status-panel .stat span:last-child {
   text-align: center;
+  word-break: break-word;
 }
 
 body.mobile-layout #level {
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   line-height: 1.2;
   white-space: pre-line;
 }
 
 body.mobile-layout .status-panel .stat .label {
-  font-size: 0.54rem;
-  letter-spacing: 0.05em;
+  font-size: 0.48rem;
+  letter-spacing: 0.04em;
 }
 
 body.mobile-layout .status-panel .stat.tips {
