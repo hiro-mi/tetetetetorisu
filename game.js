@@ -397,8 +397,9 @@ class TeteGame {
     if (typeof action !== "function") {
       return;
     }
+    const shouldDouble = this.doubleAction && currentMode === Mode.KUSOGE;
     action();
-    if (this.doubleAction && currentMode === Mode.KUSOGE) {
+    if (shouldDouble) {
       action();
     }
   }
