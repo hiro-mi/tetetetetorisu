@@ -255,15 +255,12 @@ body.mobile-layout .footer-switch::before {
 @media (max-height: 760px) {
   body.mobile-layout {
     justify-content: flex-start;
+    --mobile-cell-size: min(var(--mobile-cell-size), 20px);
   }
 
   body.mobile-layout .wrapper {
     height: auto;
     min-height: 0;
-  }
-
-  body.mobile-layout #board {
-    width: min(100%, 200px);
   }
 
   .touch-controls {
@@ -272,8 +269,8 @@ body.mobile-layout .footer-switch::before {
 }
 
 @media (max-height: 660px) {
-  body.mobile-layout #board {
-    width: min(100%, 180px);
+  body.mobile-layout {
+    --mobile-cell-size: min(var(--mobile-cell-size), 18px);
   }
 
   .touch-controls .touch-btn {
