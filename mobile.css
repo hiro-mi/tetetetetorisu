@@ -5,6 +5,7 @@ body.mobile-layout {
   justify-content: flex-start;
   padding: calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 48px);
   min-height: 100vh;
+  --mobile-cell-size: clamp(15px, 5.8vw, 20.8px);
 }
 
 body.mobile-layout .wrapper {
@@ -99,9 +100,8 @@ body.mobile-layout .play-area {
 }
 
 body.mobile-layout #board {
-  width: clamp(150px, 58vw, 208px);
-  height: auto;
-  aspect-ratio: 1 / 2;
+  width: calc(var(--mobile-cell-size) * 10);
+  height: calc(var(--mobile-cell-size) * 20);
   border-width: 3px;
 }
 
