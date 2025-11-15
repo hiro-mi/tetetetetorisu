@@ -55,6 +55,40 @@ const controlModeMessages = {
 
 let currentMode = Mode.NORMAL;
 
+const kusogeStartMessages = [
+  "クソゲーモード突入。目が痛い。",
+  "クソゲー警報。画面が嫌な色に染まる。",
+  "地獄の再訪。操作感が死んだ。",
+  "異常発生。理不尽な波が押し寄せる。",
+  "クソゲー期間開始。健全な判断力を捨てろ。",
+  "モードが暴走。まともな操作は期待するな。",
+  "腐臭漂うクソゲーモード。指が混乱する。",
+  "あ、だめだ。クソゲー界隈に転移した。",
+  "謎のノイズ。クソゲーモードが牙をむく。",
+  "光が歪む。クソゲーモードに飲まれた。",
+];
+
+const kusogeEndMessages = [
+  "突然まともな雰囲気になった。今のうちに稼げ。",
+  "クソゲーの波が引いた。束の間の平穏。",
+  "正気が戻った（仮）。息を整えろ。",
+  "バグの神が去った。操作が素直だ。",
+  "変なノイズが消えた。視界が回復した。",
+  "クソゲーモード終了。精神をリセットせよ。",
+  "地獄が一旦休業。今ならまともに積める。",
+  "謎の干渉が途切れた。指が自由だ。",
+  "理不尽の幕間。平穏な操作に戸惑う。",
+  "悪夢が霧散。今のうちにラインを稼げ。",
+];
+
+function pickRandomMessage(messages) {
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return "";
+  }
+  const index = (Math.random() * messages.length) | 0;
+  return messages[index];
+}
+
 const KusogeEffects = {
   LASER: "laser",
   DANMAKU: "danmaku",
@@ -434,7 +468,7 @@ class TeteGame {
   }
 
   hardDrop() {
-    // 強制落下は落ちるほど理不尽な減点
+    // 強制落下の理不尽減点はクソゲーモード限定
     let distance = 0;
     while (true) {
       this.pos.y++;
@@ -445,13 +479,14 @@ class TeteGame {
       distance++;
     }
     this.merge();
-    if (isNormalMode()) {
-      this.score += distance * 2;
-    } else {
-      this.score -= distance * 2;
-      if (distance > 0) {
-        logEvent(`勢い余って減点 ${distance * 2} 点。`);
+    if (currentMode === Mode.KUSOGE) {
+      const loss = distance * 2;
+      if (loss > 0) {
+        this.score -= loss;
+        logEvent(`勢い余って減点 ${loss} 点。`);
       }
+    } else {
+      this.score += distance * 2;
     }
     this.clearLines();
     this.spawnPiece();
@@ -856,19 +891,19 @@ function applyMode(game, mode) {
   if (modeEl) {
     modeEl.textContent = mode === Mode.NORMAL ? "NORMAL" : "クソゲー";
   }
+  if (previous !== mode && logEl) {
+    const messages = mode === Mode.KUSOGE ? kusogeStartMessages : kusogeEndMessages;
+    const message = pickRandomMessage(messages);
+    if (message) {
+      logEvent(message);
+    }
+  }
   if (game) {
     if (mode === Mode.NORMAL) {
       applyControlMode(game, ControlMode.NONE);
     } else {
       const trigger = previous === Mode.KUSOGE ? "mode-resume" : "mode-start";
       rollControlMode(game, trigger);
-    }
-  }
-  if (previous !== mode && logEl) {
-    if (mode === Mode.NORMAL) {
-      logEvent("突然まともな雰囲気になった。今のうちに稼げ。");
-    } else {
-      logEvent("クソゲーモード突入。操作も即座に捻じ曲げられる予感。");
     }
   }
 }
