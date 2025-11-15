@@ -1078,8 +1078,7 @@ function initGame() {
     !linesEl ||
     !levelEl ||
     !moodEl ||
-    !logEl ||
-    !fieldStatusEl
+    !logEl
   ) {
     console.error("必要な要素が見つからずゲーム初期化に失敗しました。");
     return;
