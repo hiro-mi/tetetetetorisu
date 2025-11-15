@@ -12,6 +12,15 @@ body.mobile-layout {
   --mobile-side-column-width: 92px;
 }
 
+body.mobile-layout #kusoge-background {
+  mix-blend-mode: normal;
+}
+
+body.mobile-layout #kusoge-background .emoji {
+  mix-blend-mode: normal;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.75);
+}
+
 body.mobile-layout .wrapper {
   display: grid;
   grid-template-rows: 1fr auto;
