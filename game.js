@@ -16,12 +16,14 @@ let highScoreEl;
 let moodEl;
 let modeEl;
 let logEl;
+let fieldStatusEl;
 let startBtn;
 let pauseBtn;
 let body;
 let kusogeLayer;
 let flashTimer = null;
 let modeTimer = null;
+let fieldStatusTimer = null;
 
 // クソゲーモードの滞在時間をノーマルの倍にする。
 const NORMAL_MODE_DURATION = 5000;
@@ -245,6 +247,25 @@ function logEvent(message) {
   logEl.prepend(li);
   while (logEl.children.length > 12) {
     logEl.removeChild(logEl.lastChild);
+  }
+  setFieldStatus(message);
+}
+
+function setFieldStatus(message, options = {}) {
+  if (!fieldStatusEl) {
+    return;
+  }
+  const { fadeDelay = 4500 } = options;
+  fieldStatusEl.textContent = message || "";
+  fieldStatusEl.classList.remove("is-faded");
+  if (fieldStatusTimer) {
+    clearTimeout(fieldStatusTimer);
+    fieldStatusTimer = null;
+  }
+  if (fadeDelay > 0) {
+    fieldStatusTimer = setTimeout(() => {
+      fieldStatusEl.classList.add("is-faded");
+    }, fadeDelay);
   }
 }
 
@@ -1018,13 +1039,23 @@ function initGame() {
   moodEl = document.getElementById("mood");
   modeEl = document.getElementById("mode");
   logEl = document.getElementById("event-log");
+  fieldStatusEl = document.getElementById("field-status");
   startBtn = document.getElementById("start-btn");
   pauseBtn = document.getElementById("pause-btn");
   body = document.body;
   setupKusogeBackground();
   toggleKusogeBackground(currentMode === Mode.KUSOGE);
 
-  if (!canvas || !ctx || !scoreEl || !linesEl || !levelEl || !moodEl || !logEl) {
+  if (
+    !canvas ||
+    !ctx ||
+    !scoreEl ||
+    !linesEl ||
+    !levelEl ||
+    !moodEl ||
+    !logEl ||
+    !fieldStatusEl
+  ) {
     console.error("必要な要素が見つからずゲーム初期化に失敗しました。");
     return;
   }
@@ -1039,6 +1070,7 @@ function initGame() {
   }
 
   clearBoardBackground();
+  setFieldStatus("スタートボタンで地獄開幕。準備中……", { fadeDelay: 0 });
 
   const game = new TeteGame();
   applyMode(game, Mode.NORMAL);
