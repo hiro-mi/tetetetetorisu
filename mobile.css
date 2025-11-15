@@ -102,10 +102,20 @@ body.mobile-layout .play-area {
   min-width: 0;
 }
 
+body.mobile-layout .board-wrapper {
+  width: calc(var(--mobile-cell-size) * 10 + 6px);
+  height: var(--mobile-playfield-outer-height);
+}
+
 body.mobile-layout #board {
   width: calc(var(--mobile-cell-size) * 10);
   height: var(--mobile-playfield-height);
   border-width: 3px;
+}
+
+body.mobile-layout .field-status {
+  font-size: 0.6rem;
+  padding: 4px 6px;
 }
 
 body.mobile-layout .status-panel {
