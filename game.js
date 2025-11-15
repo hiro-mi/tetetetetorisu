@@ -419,6 +419,8 @@ class TeteGame {
     this.running = true;
     this.lastTime = 0;
     this.dropCounter = 0;
+    // スタート時は必ずノーマルモードに戻して、開幕クソゲー化を避ける。
+    applyMode(this, Mode.NORMAL);
     logEvent(getRandomMessage(startLogMessages, "新しい地獄が始まった。"));
     this.update();
     startModeCycle(this);
