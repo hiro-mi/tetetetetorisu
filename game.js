@@ -8,6 +8,7 @@ const rows = 20;
 let scoreEl;
 let linesEl;
 let levelEl;
+let highScoreEl;
 let moodEl;
 let modeEl;
 let logEl;
@@ -22,6 +23,8 @@ const Mode = {
   NORMAL: "normal",
   KUSOGE: "kusoge",
 };
+
+const HIGH_SCORE_KEY = "tetetetetorisu_high_score";
 
 const ControlMode = {
   NONE: "none",
@@ -55,6 +58,7 @@ const KusogeEffects = {
 const kusogeEffectPool = Object.values(KusogeEffects);
 
 let currentKusogeEffects = [];
+let highScore = 0;
 
 const shapes = [
   [[1, 1, 1, 1]],
@@ -147,6 +151,31 @@ function logEvent(message) {
   logEl.prepend(li);
   while (logEl.children.length > 12) {
     logEl.removeChild(logEl.lastChild);
+  }
+}
+
+function loadHighScore() {
+  if (typeof window === "undefined") {
+    return 0;
+  }
+  try {
+    const stored = window.localStorage.getItem(HIGH_SCORE_KEY);
+    const value = parseInt(stored, 10);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  } catch (error) {
+    console.warn("ハイスコアの読み込みに失敗したので 0 扱い。", error);
+    return 0;
+  }
+}
+
+function saveHighScore(value) {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    window.localStorage.setItem(HIGH_SCORE_KEY, String(value));
+  } catch (error) {
+    console.warn("ハイスコアの保存に失敗した。ブラウザの設定を疑え。", error);
   }
 }
 
@@ -740,6 +769,13 @@ function updateScoreboard(game) {
   scoreEl.textContent = game.score;
   linesEl.textContent = game.lines;
   levelEl.textContent = game.level;
+  if (game && game.score > highScore) {
+    highScore = game.score;
+    saveHighScore(highScore);
+  }
+  if (highScoreEl) {
+    highScoreEl.textContent = highScore;
+  }
   if (modeEl) {
     modeEl.textContent = isNormalMode() ? "NORMAL" : "クソゲー";
   }
@@ -811,6 +847,7 @@ function initGame() {
   scoreEl = document.getElementById("score");
   linesEl = document.getElementById("lines");
   levelEl = document.getElementById("level");
+  highScoreEl = document.getElementById("high-score");
   moodEl = document.getElementById("mood");
   modeEl = document.getElementById("mode");
   logEl = document.getElementById("event-log");
@@ -827,6 +864,11 @@ function initGame() {
   if (!startBtn || !pauseBtn) {
     console.error("操作ボタンが見つからずゲーム初期化に失敗しました。");
     return;
+  }
+
+  highScore = loadHighScore();
+  if (highScoreEl) {
+    highScoreEl.textContent = highScore;
   }
 
   clearBoardBackground();
