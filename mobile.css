@@ -100,6 +100,7 @@ body.mobile-layout .play-area {
 
 body.mobile-layout #board {
   width: clamp(150px, 58vw, 208px);
+  height: auto;
   aspect-ratio: 1 / 2;
   border-width: 3px;
 }
