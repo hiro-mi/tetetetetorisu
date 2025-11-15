@@ -4,8 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tetetetetorisu mobile</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="mobile.css" />
+    <script>
+      (function () {
+        var minuteStamp = Math.floor(Date.now() / 60000);
+        var suffix = "?v=" + minuteStamp;
+        var head = document.head;
+        ["style.css", "mobile.css"].forEach(function (path) {
+          var link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = path + suffix;
+          head.appendChild(link);
+        });
+        window.__assetSuffix = suffix;
+      })();
+    </script>
   </head>
   <body class="mobile-layout">
     <div id="kusoge-background" aria-hidden="true">
@@ -79,6 +91,17 @@
         </nav>
       </footer>
     </div>
-    <script src="game.js"></script>
+    <script>
+      (function () {
+        var suffix = window.__assetSuffix;
+        if (!suffix) {
+          var minuteStamp = Math.floor(Date.now() / 60000);
+          suffix = "?v=" + minuteStamp;
+        }
+        var script = document.createElement("script");
+        script.src = "game.js" + suffix;
+        document.body.appendChild(script);
+      })();
+    </script>
   </body>
 </html>
