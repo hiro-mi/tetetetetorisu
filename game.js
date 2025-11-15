@@ -23,6 +23,10 @@ let kusogeLayer;
 let flashTimer = null;
 let modeTimer = null;
 
+// クソゲーモードの滞在時間をノーマルの倍にする。
+const NORMAL_MODE_DURATION = 5000;
+const KUSOGE_MODE_DURATION = NORMAL_MODE_DURATION * 2;
+
 const Mode = {
   NORMAL: "normal",
   KUSOGE: "kusoge",
@@ -869,26 +873,37 @@ function applyMode(game, mode) {
   }
 }
 
-function startModeCycle(game) {
+function scheduleNextMode(game) {
   if (!game || !game.running) {
     return;
   }
-  if (modeTimer) {
-    clearInterval(modeTimer);
-  }
-  applyMode(game, currentMode);
-  modeTimer = setInterval(() => {
+  const duration =
+    currentMode === Mode.KUSOGE ? KUSOGE_MODE_DURATION : NORMAL_MODE_DURATION;
+  modeTimer = setTimeout(() => {
     if (!game.running) {
       return;
     }
     const next = currentMode === Mode.NORMAL ? Mode.KUSOGE : Mode.NORMAL;
     applyMode(game, next);
-  }, 5000);
+    scheduleNextMode(game);
+  }, duration);
+}
+
+function startModeCycle(game) {
+  if (!game || !game.running) {
+    return;
+  }
+  if (modeTimer) {
+    clearTimeout(modeTimer);
+    modeTimer = null;
+  }
+  applyMode(game, currentMode);
+  scheduleNextMode(game);
 }
 
 function stopModeCycle() {
   if (modeTimer) {
-    clearInterval(modeTimer);
+    clearTimeout(modeTimer);
     modeTimer = null;
   }
 }
