@@ -3,7 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <title>tetetetetorisu</title>
-    <link rel="stylesheet" href="style.css" />
+    <script>
+      (function () {
+        var minuteStamp = Math.floor(Date.now() / 60000);
+        var suffix = "?v=" + minuteStamp;
+        var head = document.head;
+        var style = document.createElement("link");
+        style.rel = "stylesheet";
+        style.href = "style.css" + suffix;
+        head.appendChild(style);
+        window.__assetSuffix = suffix;
+      })();
+    </script>
   </head>
   <body>
     <div id="kusoge-background" aria-hidden="true">
@@ -82,6 +93,17 @@
         </nav>
       </footer>
     </div>
-    <script src="game.js"></script>
+    <script>
+      (function () {
+        var suffix = window.__assetSuffix;
+        if (!suffix) {
+          var minuteStamp = Math.floor(Date.now() / 60000);
+          suffix = "?v=" + minuteStamp;
+        }
+        var script = document.createElement("script");
+        script.src = "game.js" + suffix;
+        document.body.appendChild(script);
+      })();
+    </script>
   </body>
 </html>
