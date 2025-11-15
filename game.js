@@ -190,6 +190,12 @@ function rollControlMode(game, trigger = "抽選") {
   applyControlMode(game, nextMode, trigger);
 }
 
+const controlModeTriggerLabels = {
+  "mode-start": "クソゲー突入抽選",
+  "mode-resume": "クソゲー再開抽選",
+  lock: "着地抽選",
+};
+
 function applyControlMode(game, mode, trigger = "") {
   if (!game) return;
   const previous = game.controlMode || ControlMode.NONE;
@@ -202,8 +208,7 @@ function applyControlMode(game, mode, trigger = "") {
       logEvent("理不尽操作モードがうやむやに終了した。");
     }
   } else {
-    const suffix =
-      trigger === "mode" ? "モード抽選" : trigger === "lock" ? "着地抽選" : trigger;
+    const suffix = controlModeTriggerLabels[trigger] || trigger;
     const description = controlModeMessages[mode] || "訳の分からない不具合";
     logEvent(`理不尽操作モード: ${description}（${suffix}）`);
   }
@@ -851,14 +856,15 @@ function applyMode(game, mode) {
     if (mode === Mode.NORMAL) {
       applyControlMode(game, ControlMode.NONE);
     } else {
-      rollControlMode(game, "mode");
+      const trigger = previous === Mode.KUSOGE ? "mode-resume" : "mode-start";
+      rollControlMode(game, trigger);
     }
   }
   if (previous !== mode && logEl) {
     if (mode === Mode.NORMAL) {
       logEvent("突然まともな雰囲気になった。今のうちに稼げ。");
     } else {
-      logEvent("クソゲーモード突入。目が痛い。");
+      logEvent("クソゲーモード突入。操作も即座に捻じ曲げられる予感。");
     }
   }
 }
